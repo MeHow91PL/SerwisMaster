@@ -1,0 +1,22 @@
+﻿<Window x:Class="SerwisMaster.dodanieDanychLogowania"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        Title="dodanieDanychLogowania" Height="300" Width="388" WindowStartupLocation="CenterScreen" PreviewKeyDown="Window_PreviewKeyDown">
+    <Grid>
+        <Label Content="System" Height="28" Margin="0,48,269,0" Name="label3" VerticalAlignment="Top" FontFamily="/SerwisMaster;component/Fonts/#Roboto" FontSize="14" HorizontalAlignment="Right" Width="63" />
+        <ComboBox Height="23" HorizontalAlignment="Left" Margin="116,50,0,0" Name="systemComboBox" VerticalAlignment="Top" Width="181" FontFamily="/SerwisMaster;component/Fonts/#Roboto" FontSize="14" TabIndex="0">
+            <ComboBoxItem Content="SZOI"/>
+            <ComboBoxItem Content="KS-PPS" />
+            <ComboBoxItem Content="KS-SOMED" />
+            <ComboBoxItem Content="Windows" />
+        </ComboBox>
+        <Label Content="Login" Height="28" HorizontalAlignment="Right" Margin="0,90,269,0" Name="label1" VerticalAlignment="Top" FontFamily="/SerwisMaster;component/Fonts/#Roboto" FontSize="14" />
+        <TextBox Height="23" HorizontalAlignment="Left" Margin="116,93,0,0" Name="loginTextBox" VerticalAlignment="Top" Width="181" FontFamily="/SerwisMaster;component/Fonts/#Roboto" FontSize="14" KeyDown="loginTextBox_KeyDown" TabIndex="1" />
+
+        <Label Content="Hasło" Height="28" HorizontalAlignment="Right" Margin="0,134,269,0" Name="label2" VerticalAlignment="Top" FontFamily="/SerwisMaster;component/Fonts/#Roboto" FontSize="14" />
+        <TextBox Height="23" HorizontalAlignment="Left" Margin="116,136,0,0" Name="hasloTextBox" VerticalAlignment="Top" Width="181" FontFamily="/SerwisMaster;component/Fonts/#Roboto" FontSize="14" TabIndex="2" KeyDown="hasloTextBox_KeyDown" />
+
+        <Button Content="Zapisz" Height="23" HorizontalAlignment="Left" Margin="90,214,0,0" Name="zapiszButton" VerticalAlignment="Top" Width="75" Click="zapiszButton_Click" TabIndex="3" Template="{DynamicResource ButtonControlTemplate1}" FontFamily="/SerwisMaster;component/Fonts/#Roboto" />
+        <Button Content="Anuluj" Height="23" HorizontalAlignment="Right" Margin="0,214,90,0" Name="anulujButton" VerticalAlignment="Top" Width="75" Click="anulujButton_Click" TabIndex="4" Template="{DynamicResource ButtonControlTemplate1}" FontFamily="/SerwisMaster;component/Fonts/#Roboto" />
+    </Grid>
+</Window>

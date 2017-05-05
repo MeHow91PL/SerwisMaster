@@ -1,0 +1,26 @@
+﻿<Window x:Class="SerwisMaster.DatabasePath"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        Title="DatabasePath" Height="280.5" Background="#00000000" AllowsTransparency="True" WindowStartupLocation="CenterScreen" mc:Ignorable="d" xmlns:d="http://schemas.microsoft.com/expression/blend/2008" xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" WindowStyle="None" Width="684.5" PreviewKeyDown="Window_PreviewKeyDown">
+    <Grid Height="184" Margin="0" VerticalAlignment="Center" HorizontalAlignment="Center" Width="503">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="30*" />
+            <RowDefinition Height="152*" />
+        </Grid.RowDefinitions>
+        <Rectangle Height="184" Name="rectangle1" Stroke="{x:Null}" VerticalAlignment="Top" Fill="White" Grid.RowSpan="2" StrokeThickness="0">
+            <Rectangle.Effect>
+                <DropShadowEffect BlurRadius="70" Direction="0" Opacity="1" Color="Black" ShadowDepth="0" />
+            </Rectangle.Effect>
+        </Rectangle>
+        <DockPanel Height="30" HorizontalAlignment="Stretch" Name="dockPanel1" VerticalAlignment="Top" MouseLeftButtonDown="dockPanel1_MouseLeftButtonDown" Background="#FF3445B2">
+            <Button Template="{DynamicResource ExitButtonControlTemplate}" HorizontalAlignment="Right" Margin="0,-16,0,0" Name="button1"  Width="30" Background="{x:Null}" BorderBrush="{x:Null}" FontSize="16" Padding="0" FontFamily="Comic Sans MS" Click="button1_Click" Height="30" Foreground="White"  Content="X" VerticalAlignment="Bottom" HorizontalContentAlignment="Center" VerticalContentAlignment="Center" DockPanel.Dock="Right" />
+            <StackPanel HorizontalAlignment="Center" VerticalAlignment="Center" Orientation="Horizontal" DockPanel.Dock="Top">
+                <TextBlock HorizontalAlignment="Center" Margin="30,0,0,0" Name="databasePathTitle" Text="Ścieżka do bazy" VerticalAlignment="Center" FontFamily="/SerwisMaster;component/Fonts/#Roboto" TextAlignment="Center" TextTrimming="None" Foreground="White" FontSize="13.333" />
+            </StackPanel>
+        </DockPanel>
+        <Label Content="Ścieżka" Grid.Row="1" HorizontalAlignment="Left" Margin="31,56,0,0" Name="databasePathLabel" VerticalAlignment="Top" FontFamily="/SerwisMaster;component/Fonts/#Roboto" FontSize="13.333" />
+        <TextBox Grid.Row="1" Height="30" HorizontalAlignment="Left" Margin="91,54,0,0" Name="databasePathTextBox" VerticalAlignment="Top" Width="328" BorderBrush="#FFB2B2B2" Padding="5,0" FontSize="13.333" VerticalContentAlignment="Center" FontFamily="/SerwisMaster;component/Fonts/#Roboto" />
+        <Button Template="{DynamicResource ButtonControlTemplate1}" Background="White" BorderBrush="#FFB2B2B2" Content="..." FontFamily="DejaVu Sans" FontSize="16" Margin="419,54,0,0" Name="databasePathButton" Padding="0" VerticalAlignment="Top" Grid.Row="1" Height="30" Click="databasePathButton_Click" HorizontalAlignment="Left" Width="32" BorderThickness="0,1,1,1" />
+        <Button Template="{DynamicResource ButtonControlTemplate1}" Content="Zapisz" Grid.Row="1" Height="23" HorizontalAlignment="Center" Margin="212,0,212,22" Name="button2" VerticalAlignment="Bottom" Width="79" BorderBrush="#FFB2B2B2" Background="White" Click="button2_Click" FontFamily="/SerwisMaster;component/Fonts/#Roboto" FontSize="13.333" />
+    </Grid>
+</Window>
