@@ -1,0 +1,24 @@
+﻿<?xml version='1.0' encoding='utf-8'?>
+<SettingsFile xmlns="http://schemas.microsoft.com/VisualStudio/2004/01/settings" CurrentProfile="(Default)" GeneratedClassNamespace="KontaktyKS.Properties" GeneratedClassName="Settings">
+  <Profiles />
+  <Settings>
+    <Setting Name="DataBasePath" Type="System.String" Scope="User">
+      <Value Profile="(Default)" />
+    </Setting>
+    <Setting Name="baseXmlPath" Type="System.String" Scope="User">
+      <Value Profile="(Default)">C:\kontaktyKS\xml\MyConnections.xml</Value>
+    </Setting>
+    <Setting Name="primaryWidth" Type="System.Double" Scope="User">
+      <Value Profile="(Default)">1000</Value>
+    </Setting>
+    <Setting Name="primaryHeight" Type="System.Double" Scope="User">
+      <Value Profile="(Default)">600</Value>
+    </Setting>
+    <Setting Name="colorStyle1" Type="System.String" Scope="User">
+      <Value Profile="(Default)">#443344</Value>
+    </Setting>
+    <Setting Name="MinimalizeWindowPosition" Type="System.Windows.Point" Scope="User">
+      <Value Profile="(Default)">0,0</Value>
+    </Setting>
+  </Settings>
+</SettingsFile>

@@ -1,0 +1,36 @@
+﻿<Window x:Class="KontaktyKS.OknoPolaczenia"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        Title="Dodaj_polaczenie" Height="434" Width="483.15" WindowStyle="None" ResizeMode="NoResize" ScrollViewer.VerticalScrollBarVisibility="Disabled" Background="#00000000" AllowsTransparency="True" WindowStartupLocation="CenterScreen" Loaded="Window_Loaded">
+    <Grid Margin="40,40,0,0" Background="#00121ACD" HorizontalAlignment="Left" Width="403" Height="354" VerticalAlignment="Top">
+        <Rectangle HorizontalAlignment="Left" Stroke="Black" StrokeThickness="0" Width="403" Fill="White">
+            <Rectangle.Effect>
+                <DropShadowEffect ShadowDepth="0" BlurRadius="30"/>
+            </Rectangle.Effect>
+        </Rectangle>
+        <Label Content="Rodzaj" FontFamily="Verdana" Margin="28,42,0,0" VerticalAlignment="Top" FontSize="14" HorizontalAlignment="Left" Width="57" />
+        <ComboBox x:Name="rodzajComboBox" Height="27" HorizontalAlignment="Left" Margin="93,42,0,0"  VerticalAlignment="Top" Width="231" BorderBrush="#69000000" SelectedIndex="0" FontFamily="Verdana" HorizontalContentAlignment="Center" FontSize="16" Background="White" SelectionChanged="rodzajComboBox_SelectionChanged" TabIndex="0">
+            <ComboBoxItem Content="TeamViewer" />
+            <ComboBoxItem Content="RDP" />
+        </ComboBox>
+
+        <Label Content="Nazwa" x:Name="nazwaLabel" FontFamily="Verdana" HorizontalAlignment="Left" Margin="37,112,0,0" VerticalAlignment="Top" />
+        <TextBox x:Name="nazwaTextBox" BorderBrush="#66000000" Height="23" Margin="93,113,0,0" TextWrapping="Wrap" VerticalAlignment="Top" FontFamily="Verdana" HorizontalAlignment="Left" Width="231" TabIndex="1" KeyDown="nazwaTextBox_KeyDown" />
+
+        <Label Content="Adres" x:Name="adresLabel" FontFamily="Verdana" HorizontalAlignment="Left" Margin="41,145,0,0" VerticalAlignment="Top" Visibility="Hidden" />
+        <TextBox x:Name="adresTextBox" Background="White" BorderBrush="#66000000" Height="23" Margin="93,145,79,0"  TextWrapping="Wrap" VerticalAlignment="Top" Visibility="Hidden" TabIndex="2" KeyDown="adresTextBox_KeyDown" />
+
+        <Label Content="Id" x:Name="loginLabel" FontFamily="Verdana" Margin="63,157,317,0" VerticalAlignment="Top"/>
+        <TextBox x:Name="loginTextBox" Height="23" HorizontalAlignment="Left" Margin="93,158,0,0"  VerticalAlignment="Top" Width="231" BorderBrush="#69000000" FontFamily="Verdana" TabIndex="3" KeyDown="loginTextBox_KeyDown" />
+
+        <Label Content="Hasło" x:Name="hasloLabel" FontFamily="Verdana" HorizontalAlignment="Left" Margin="43,203,0,0" VerticalAlignment="Top" />
+        <TextBox x:Name="hasloTextBox" BorderBrush="#66000000" Height="23" Margin="93,204,0,0"  TextWrapping="Wrap" VerticalAlignment="Top" FontFamily="Verdana" HorizontalAlignment="Left" Width="231" TabIndex="4" KeyDown="hasloTextBox_KeyDown" />
+
+        <Button Background="White" BorderBrush="Black" Click="OkBT_Click" Content="Ok" Height="30" Margin="93,293,0,0" VerticalAlignment="Top" FontFamily="Verdana" HorizontalAlignment="Left" Width="93" />
+        <Button x:Name="anulujButton" Background="White" BorderBrush="Black" Content="Anuluj" Height="30" Margin="231,293,0,0" VerticalAlignment="Top" FontFamily="Verdana" Click="anulujButton_Click" HorizontalAlignment="Left" Width="93" />
+
+        <DockPanel x:Name="titlePanel" Height="37" LastChildFill="False" VerticalAlignment="Top" MouseLeftButtonDown="titlePanel_MouseLeftButtonDown" Background="#FF243CD8" FlowDirection="RightToLeft">
+            <Button x:Name="exitButton" Content="X" Width="40" Template="{DynamicResource ButtonControlTemplate1}" Click="Button_Click" Padding="1" Background="{x:Null}" Foreground="White" FontFamily="Comic Sans MS" FontSize="18.667" />
+        </DockPanel>
+    </Grid>
+</Window>
