@@ -92,6 +92,12 @@
     <Prefer32Bit>false</Prefer32Bit>
   </PropertyGroup>
   <ItemGroup>
+    <Reference Include="EntityFramework, Version=6.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089, processorArchitecture=MSIL">
+      <HintPath>..\packages\EntityFramework.6.1.3\lib\net45\EntityFramework.dll</HintPath>
+    </Reference>
+    <Reference Include="EntityFramework.SqlServer, Version=6.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089, processorArchitecture=MSIL">
+      <HintPath>..\packages\EntityFramework.6.1.3\lib\net45\EntityFramework.SqlServer.dll</HintPath>
+    </Reference>
     <Reference Include="importFromRemoteDesktopManager">
       <HintPath>..\..\..\Users\Michał Kokosiński\Documents\Visual Studio 2015\Projects\importFromRemoteDesktopManager\importFromRemoteDesktopManager\bin\Release\importFromRemoteDesktopManager.dll</HintPath>
     </Reference>
@@ -100,6 +106,7 @@
       <Private>True</Private>
     </Reference>
     <Reference Include="System" />
+    <Reference Include="System.ComponentModel.DataAnnotations" />
     <Reference Include="System.Data" />
     <Reference Include="System.Drawing" />
     <Reference Include="System.Windows.Forms" />
@@ -119,6 +126,10 @@
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </ApplicationDefinition>
+    <Compile Include="BL\BazaLocalDb.cs" />
+    <Compile Include="BL\IBazaDanych.cs" />
+    <Compile Include="BL\ElementyBL.cs" />
+    <Compile Include="DAL\ApplicationDbContext.cs" />
     <Compile Include="Element\CreateHeader.cs" />
     <Compile Include="GlobalSuppressions.cs" />
     <Compile Include="GlowneOkienko\DefaultPasswordsWindow.xaml.cs">
@@ -128,6 +139,21 @@
     <Compile Include="Folder\Folder.cs" />
     <Compile Include="Klient\DodajKlienta.cs" />
     <Compile Include="Klient\EdytujKlienta.cs" />
+    <Compile Include="Migrations\201705052205006_init.cs" />
+    <Compile Include="Migrations\201705052205006_init.Designer.cs">
+      <DependentUpon>201705052205006_init.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\201705052259076_test2.cs" />
+    <Compile Include="Migrations\201705052259076_test2.Designer.cs">
+      <DependentUpon>201705052259076_test2.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\201705071045429_testytest.cs" />
+    <Compile Include="Migrations\201705071045429_testytest.Designer.cs">
+      <DependentUpon>201705071045429_testytest.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\Configuration.cs" />
+    <Compile Include="Models\Elementy.cs" />
+    <Compile Include="Models\Klienci.cs" />
     <Compile Include="myMessageBox.xaml.cs">
       <DependentUpon>myMessageBox.xaml</DependentUpon>
     </Compile>
@@ -233,6 +259,15 @@
       <DependentUpon>Settings.settings</DependentUpon>
       <DesignTimeSharedInput>True</DesignTimeSharedInput>
     </Compile>
+    <EmbeddedResource Include="Migrations\201705052205006_init.resx">
+      <DependentUpon>201705052205006_init.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201705052259076_test2.resx">
+      <DependentUpon>201705052259076_test2.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201705071045429_testytest.resx">
+      <DependentUpon>201705071045429_testytest.cs</DependentUpon>
+    </EmbeddedResource>
     <EmbeddedResource Include="Properties\Resources.resx">
       <Generator>PublicResXFileCodeGenerator</Generator>
       <SubType>Designer</SubType>

@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations.Schema;
 using System.Linq;
 using System.Text;
 using System.Threading;
@@ -9,6 +10,7 @@ using System.Xml;
 
 namespace SerwisMaster
 {
+    [Table("Elementy")]
     public abstract class Element : TreeViewItem
     {
         public string nazwa { get; set; }

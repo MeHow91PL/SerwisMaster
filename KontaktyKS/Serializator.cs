@@ -147,21 +147,20 @@ namespace SerwisMaster
 
                 List<Element> elementyNaLiscie = new List<Element>();
 
-                while (true)
-                {
+                //while (true)
+                //{
 
-                    try
-                    {
-                        xml.Load(file);
+                //    try
+                //    {
+                //        xml.Load(file);
 
-                        break;
-                    }
-                    catch (Exception)
-                    {
-                        MyMessageBox.Show(" o ");
-                    }
+                //        break;
+                //    }
+                //    catch (Exception)
+                //    {
+                //    }
 
-                }
+                //}
 
                 if (xml.ChildNodes[0] != null)
                 {

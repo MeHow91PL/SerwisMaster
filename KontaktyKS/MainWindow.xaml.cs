@@ -1,8 +1,13 @@
 ﻿using Microsoft.Win32;
+using SerwisMaster.BL;
+using SerwisMaster.DAL;
+using SerwisMaster.Models;
 using System;
 using System.Collections.Generic;
+using System.Data.Entity;
 using System.Diagnostics;
 using System.IO;
+using System.Linq;
 using System.Threading;
 using System.Windows;
 using System.Windows.Controls;
@@ -23,7 +28,7 @@ namespace SerwisMaster
     /// </summary>
     public partial class MainWindow : Window
     {
-        static IPolaczenieZBazaDanych bazaDanych;
+        static IBazaDanych bazaDanych = new BazaLocalDb();
         public static TreeView listOfClients;
         bool isMaximalize = false;
         List<Folder> allItems = null;
@@ -34,11 +39,29 @@ namespace SerwisMaster
         public MainWindow()
         {
             InitializeComponent();
+
+            //Elementy elem = new Elementy { Nazwa = "Folder1", Rodzaj = RodzajElementu.Folder, Id = 1 };
+            //Elementy elem2 = new Elementy { Nazwa = "Folder2", Rodzaj = RodzajElementu.Folder, Id = 2, IdRodzica = 1 };
+            //Elementy elem3 = new Elementy { Nazwa = "Klient1", Rodzaj = RodzajElementu.Klient, Id = 3, IdRodzica = 1 };
+            //Elementy elem4 = new Elementy { Nazwa = "Inne", Rodzaj = RodzajElementu.Inne, Id = 4 };
+
+            //db.Elementy.Add(elem);
+            //db.Elementy.Add(elem2);
+            //db.Elementy.Add(elem3);
+            //db.Elementy.Add(elem4);
+            //db.SaveChanges();
+
+            //usun();
+
+            // System.Windows.Forms.MessageBox.Show(test);
             //UruchomAplikacje(); //BAZA XML
-            //bazaDanych = new PolaczeniePostgres();
             //listaKlientowTreeView.ItemsSource = bazaDanych.pobierzElementy();
+            listaKlientowTreeView.ItemsSource = bazaDanych.PobierzWszystkieElementy();
         }
 
+        
+
+        
         //private void UruchomAplikacje()
         //{
 
@@ -261,7 +284,7 @@ namespace SerwisMaster
                 listaKlientow.ItemsSource = null;
                 //listaKlientow.ItemsSource = Serializator.deserializuj(Properties.Settings.Default.baseXmlPath);
 
-                listaKlientow.ItemsSource = bazaDanych.pobierzElementy();
+                listaKlientow.ItemsSource = bazaDanych.PobierzWszystkieElementy();
 
                 //odczytuje klientów, którzy mają rozwiniętą listę połaczeń i są widoczne
                 foreach (Element f in listaKlientow.Items)
@@ -685,8 +708,6 @@ namespace SerwisMaster
                             }
                         }
 
-
-
                         Element elem = null;
                         foreach (Element element in allElements)
                         {
@@ -746,7 +767,7 @@ namespace SerwisMaster
                         }
                     }
                     else
-                        listaElementów.ItemsSource = Serializator.deserializuj(Properties.Settings.Default.baseXmlPath);
+                        listaElementów.ItemsSource = bazaDanych.PobierzWszystkieElementy();
                 }
             }
             catch (Exception ex)
