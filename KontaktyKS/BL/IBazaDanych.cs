@@ -10,6 +10,9 @@ namespace SerwisMaster.BL
     interface IBazaDanych
     {
         List<Element> PobierzWszystkieElementy();
+        bool DodajElement(Element element);
+        bool UsunElement(Element element);
+        bool UsunWszystkieElementy();
         //List<Element> WyszukajElementyPoNazwie(string szukanaNazwa, bool szukajWPodciagach);
     }
 }

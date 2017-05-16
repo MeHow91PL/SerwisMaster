@@ -1,4 +1,5 @@
-﻿using System;
+﻿using SerwisMaster.Models;
+using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations.Schema;
 using System.Linq;
@@ -13,33 +14,39 @@ namespace SerwisMaster
     [Table("Elementy")]
     public abstract class Element : TreeViewItem
     {
-        public string nazwa { get; set; }
-        public string id { get; set; }
-        public string group { get; set; }
-        public string opis { get; set; }
+        public string Nazwa { get; set; }
+        public string Id { get; set; }
+        public string Klucz { get; set; }
+        public string KluczRodzica { get; set; }
+        public string Opis { get; set; }
+        public RodzajElementu Rodzaj { get; set; }
         public object parent;
 
         public Element()
         {
-            this.nazwa = "";
-            this.id = "";
-            this.group = "";
-            this.opis = "";
+            this.Nazwa = "";
+            this.Id = "";
+            this.Klucz = "";
+            this.KluczRodzica = "";
+            this.Opis = "";
             this.parent = null;
         }
         
-        public Element(string nazwa, string group, string opis, string id = "", object parent = null)
+        public Element(string nazwa, string kluczRodzica, string opis , string klucz = "", object parent = null)
         {
-            this.nazwa = nazwa;
+            this.Nazwa = nazwa;
 
-            if (string.IsNullOrWhiteSpace(id))
-                id = Guid.NewGuid().ToString();
+            if (string.IsNullOrWhiteSpace(klucz))
+                klucz = Guid.NewGuid().ToString();
             else
-                this.id = id;
+                this.Id = klucz;
 
-            this.group = group;
-            this.opis = opis;
+            this.Klucz = klucz;
+            this.KluczRodzica = kluczRodzica;
+            this.Opis = opis;
             this.parent = parent;
+
+            
 
             this.Header = CreateHeader.createItemHeader(this);
             this.ContextMenu = CreateContextMenu();
@@ -78,7 +85,7 @@ namespace SerwisMaster
             List<string> listaIdDoUsuniecia = null;
 
             if (MyMessageBox.Show("Czy na pewno chcesz usunąć bieżący element wraz z wszystkimi podległymi do niego?", "Usuń element",
-                MyMessageBoxButtons.OkAnuluj) == MyResult.OK)
+                MyMessageBoxButtons.OkAnuluj) == MessageBoxResult.OK)
             {
                 if (element.Parent != null) //Jeżeli elementem nadżędnym do usuwanego jest inny element
                 {
@@ -109,7 +116,7 @@ namespace SerwisMaster
             while (kolejkaElementow.Count > 0) //wyszukuje wszystkie Elementy do usunięcia
             {
                 Element tempElement = kolejkaElementow.Dequeue();
-                listaIdDoUsuniecia.Add(tempElement.id);
+                listaIdDoUsuniecia.Add(tempElement.Id);
                 if (tempElement.HasItems)
                 {
                     foreach (Element o in tempElement.Items)

@@ -29,23 +29,23 @@ namespace SerwisMaster
                 connectNode.Attributes.Append(xml.CreateAttribute("Type"));
                 connectNode.Attributes.Append(xml.CreateAttribute("Description"));
 
-                connectNode.Attributes["Id"].InnerText = obj.id.ToString();
+                connectNode.Attributes["Id"].InnerText = obj.Id.ToString();
 
                 if (obj.parent is Folder)
-                    connectNode.Attributes["Group"].InnerText = (obj.parent as Folder).id.ToString();
-                else if (!string.IsNullOrWhiteSpace(obj.group))
-                    connectNode.Attributes["Group"].InnerText = obj.group;
+                    connectNode.Attributes["Group"].InnerText = (obj.parent as Folder).Id.ToString();
+                else if (!string.IsNullOrWhiteSpace(obj.KluczRodzica))
+                    connectNode.Attributes["Group"].InnerText = obj.KluczRodzica;
                 else
                     connectNode.Attributes["Group"].InnerText = "";
 
-                connectNode.Attributes["Description"].InnerText = obj.opis;
+                connectNode.Attributes["Description"].InnerText = obj.Opis;
 
                 if (obj is Klient)
                 {
                     Klient klient = (Klient)obj;
 
                     connectNode.Attributes["Type"].InnerText = "Klient";
-                    connectNode.Attributes["Name"].InnerText = klient.nazwa;
+                    connectNode.Attributes["Name"].InnerText = klient.Nazwa;
 
 
                     XmlNode emails = xml.CreateElement("Emails");
@@ -94,7 +94,7 @@ namespace SerwisMaster
                 else if (obj is Folder) // if obj is Folder
                 {
                     connectNode.Attributes["Type"].InnerText = "Folder";
-                    connectNode.Attributes["Name"].InnerText = obj.nazwa;
+                    connectNode.Attributes["Name"].InnerText = obj.Nazwa;
                 }
                 else if (obj is TeamViewer)
                 {
@@ -102,7 +102,7 @@ namespace SerwisMaster
                     connectNode.Attributes.Append(xml.CreateAttribute("TeamViewerId"));
                     connectNode.Attributes.Append(xml.CreateAttribute("Password"));
 
-                    connectNode.Attributes["Name"].InnerText = tv.nazwa;
+                    connectNode.Attributes["Name"].InnerText = tv.Nazwa;
                     connectNode.Attributes["Type"].InnerText = "TeamViewer";
                     connectNode.Attributes["TeamViewerId"].InnerText = tv.teamViewerId;
                     if (string.IsNullOrWhiteSpace(tv.haslo)) tv.haslo = Properties.Settings.Default.defaultPasswordOfTeamViewer;
@@ -115,7 +115,7 @@ namespace SerwisMaster
                     connectNode.Attributes.Append(xml.CreateAttribute("Login"));
                     connectNode.Attributes.Append(xml.CreateAttribute("Password"));
 
-                    connectNode.Attributes["Name"].InnerText = rdp.nazwa;
+                    connectNode.Attributes["Name"].InnerText = rdp.Nazwa;
                     connectNode.Attributes["Type"].InnerText = "Rdp";
                     connectNode.Attributes["Address"].InnerText = rdp.adresRDP;
                     connectNode.Attributes["Login"].InnerText = rdp.login;
@@ -197,7 +197,7 @@ namespace SerwisMaster
                             break;
                     }
 
-                    if (string.IsNullOrWhiteSpace(element.group))
+                    if (string.IsNullOrWhiteSpace(element.KluczRodzica))
                     {
                         elementy.Add(element);
                         elementyNaLiscie.Add(element);
@@ -213,9 +213,9 @@ namespace SerwisMaster
                     Element tempElement = null;
                     var fol = childrenNodes.Dequeue();
 
-                    if (elementyNaLiscie.Any(f => f.id == fol.group))
+                    if (elementyNaLiscie.Any(f => f.Id == fol.KluczRodzica))
                     {
-                        tempElement = elementyNaLiscie.Single(f => f.id == fol.group);
+                        tempElement = elementyNaLiscie.Single(f => f.Id == fol.KluczRodzica);
                         tempElement.Items.Add(fol);
                         elementyNaLiscie.Add(fol);
                     }
@@ -223,7 +223,7 @@ namespace SerwisMaster
                         childrenNodes.Enqueue(fol);
                 }
 
-                elementy = elementy.OrderBy(e => e.nazwa).ToList();
+                elementy = elementy.OrderBy(e => e.Nazwa).ToList();
                 return elementy;
             }
             catch(Exception ex)

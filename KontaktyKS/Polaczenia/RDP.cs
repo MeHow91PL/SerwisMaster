@@ -18,6 +18,7 @@ namespace SerwisMaster.Klasy_połączenia
         public Rdp(string nazwa, string group, string opis, string haslo, string typ, string adresRDP, string login, string id="", object parent=null)
             : base(nazwa, group, opis, haslo, typ, id, parent)
         {
+            this.Rodzaj = Models.RodzajElementu.Rdp;
             this.adresRDP = adresRDP;
             this.login = login;
 
@@ -109,8 +110,8 @@ namespace SerwisMaster.Klasy_połączenia
                 else
                     dir = new DirectoryInfo(rdpDirectory);
 
-                stworzRdp(rdpDirectory, base.nazwa, this.adresRDP, this.login, base.haslo);
-                Process.Start(rdpDirectory + nazwa + ".rdp");
+                stworzRdp(rdpDirectory, base.Nazwa, this.adresRDP, this.login, base.haslo);
+                Process.Start(rdpDirectory + Nazwa + ".rdp");
             }
             catch (Exception ex)
             {

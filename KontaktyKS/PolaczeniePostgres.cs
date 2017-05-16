@@ -64,14 +64,14 @@ namespace SerwisMaster
             while (PobraneElementy.Count > 0)
             {
                 Element element = PobraneElementy.Dequeue();
-                if (string.IsNullOrWhiteSpace(element.group))//jeżeli element nie ma rodzica to dodaj bezpośrednio na listę elementów
+                if (string.IsNullOrWhiteSpace(element.KluczRodzica))//jeżeli element nie ma rodzica to dodaj bezpośrednio na listę elementów
                 {
                     ListaElementow.Add(element);
                     ElementyNaLiscie.Add(element);
                 }
-                else if (ElementyNaLiscie.Any(e => e.id == element.group)) //jeżeli element na rodzica i jest on już na liście to dodaj element jako item
+                else if (ElementyNaLiscie.Any(e => e.Id == element.KluczRodzica)) //jeżeli element na rodzica i jest on już na liście to dodaj element jako item
                 {
-                    Element parent = ElementyNaLiscie.Single(e => e.id == element.group);
+                    Element parent = ElementyNaLiscie.Single(e => e.Id == element.KluczRodzica);
                     parent.Items.Add(element);
                     ElementyNaLiscie.Add(element);
                 }

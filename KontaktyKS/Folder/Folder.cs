@@ -1,4 +1,5 @@
-﻿using System;
+﻿using SerwisMaster.Models;
+using System;
 using System.Collections.Generic;
 using System.Threading;
 using System.Windows;
@@ -12,19 +13,21 @@ namespace SerwisMaster
 {
     public class Folder : Element
     {
-        public string groupRDM { get; set;}
+        public string groupRDM { get; set; }
 
         public Folder() : base() { }
 
-        public Folder(string nazwa, string group, string opis, string id="", object parent=null) : base (nazwa,group,opis,id,parent)
+        public Folder(string nazwa, string kluczRodzica, string opis, string klucz = "", object parent = null)
+            : base(nazwa, kluczRodzica, opis, klucz, parent)
         {
+            this.Rodzaj = RodzajElementu.Folder;
             this.Tag = "1" + nazwa;
             this.AllowDrop = true;
             //createContextMenu();
             this.MouseEnter += Folder_MouseEnter;
             this.MouseLeave += Folder_MouseLeave;
             this.GotFocus += Folder_GotFocus;
-            this.Expanded += Tescik ;
+            this.Expanded += Tescik;
         }
 
         private void Tescik(object sender, RoutedEventArgs e)
@@ -34,7 +37,7 @@ namespace SerwisMaster
 
         private void Folder_MouseLeave(object sender, MouseEventArgs e)
         {
-            
+
         }
 
         private void Folder_MouseEnter(object sender, MouseEventArgs e)
@@ -73,7 +76,7 @@ namespace SerwisMaster
         public void DodajFolder(object sender, RoutedEventArgs e)
         {
             var parent = getSenderParent(sender) as UIElement;
-            Folder folder = new Folder("", "","","",parent);
+            Folder folder = new Folder("", "", "", "", parent);
 
             if (parent is Folder)
             {
@@ -87,29 +90,26 @@ namespace SerwisMaster
                 list.Add(folder);
                 CollectionViewSource.GetDefaultView(list).Refresh();
             }
-
-
-            Thread watek = new Thread(new ThreadStart(() => { Serializator.serializuj(folder); }));
-            watek.Start();
-
+            //Thread watek = new Thread(new ThreadStart(() => { Serializator.serializuj(folder); }));
+            //watek.Start();
             focusOnFolder(folder);
         }
 
         public void ZmienNazwe(object sender, RoutedEventArgs e)
         {
             focusOnFolder(this);
-        }       
+        }
 
         private void focusOnFolder(Folder f)
         {
             (f.Header as WrapPanel).Children.RemoveAt(1);
-            (f.Header as WrapPanel).Children.Add(new MyTextBox(f) { Text = f.nazwa , VerticalAlignment = VerticalAlignment.Center });
+            (f.Header as WrapPanel).Children.Add(new MyTextBox(f) { Text = f.Nazwa, VerticalAlignment = VerticalAlignment.Center });
 
             TextBox tb = (f.Header as WrapPanel).Children[1] as TextBox;
             tb.Focusable = true;
 
             Dispatcher.BeginInvoke(DispatcherPriority.Input,
-             new Action(delegate()
+             new Action(delegate ()
             {
                 f.Focus();         // Set Logical Focus
                 Keyboard.Focus(tb); // Set Keyboard Focus

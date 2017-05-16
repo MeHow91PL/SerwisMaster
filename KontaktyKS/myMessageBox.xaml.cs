@@ -19,7 +19,7 @@ namespace SerwisMaster
     public partial class MyMessageBox : Window
     {
 
-        static MyResult result;
+        static MessageBoxResult result;
         
         private MyMessageBox()
         {
@@ -59,7 +59,7 @@ namespace SerwisMaster
         /// <param name="caption">Type string. Text to display as title of window</param>
         /// <param name="buttons">Type array of string. Texts to display in new button controls</param>
         /// <returns></returns>
-        public static MyResult Show( string message, string caption, MyMessageBoxButtons buttons )
+        public static MessageBoxResult Show( string message, string caption, MyMessageBoxButtons buttons )
         {
 
             MyMessageBox box = new MyMessageBox();
@@ -83,7 +83,11 @@ namespace SerwisMaster
                     box.buttonsStackPanel.Children.Add( MyMessageBox.createButton( "ANULUJ", template) );
                     break;
                 case MyMessageBoxButtons.Popraw:
-                    box.buttonsStackPanel.Children.Add( MyMessageBox.createButton( "POPRAW", template) );
+                    box.buttonsStackPanel.Children.Add(MyMessageBox.createButton("POPRAW", template));
+                    break;
+                case MyMessageBoxButtons.PominPopraw:
+                    box.buttonsStackPanel.Children.Add(MyMessageBox.createButton("POPRAW", template));
+                    box.buttonsStackPanel.Children.Add(MyMessageBox.createButton("POMIŃ", template));
                     break;
                 case MyMessageBoxButtons.Usun:
                     box.buttonsStackPanel.Children.Add( MyMessageBox.createButton( "USUŃ", template) );
@@ -127,19 +131,19 @@ namespace SerwisMaster
             switch( ( sender as Button ).Content.ToString() )
             { 
                 case "OK":
-                    result = MyResult.OK;
+                    result = MessageBoxResult.OK;
                     break;
                 case "POPRAW":
-                    result = MyResult.POPRAW;
+                    result = MessageBoxResult.POPRAW;
                     break;
                 case "ANULUJ":
-                    result = MyResult.ANULUJ;
+                    result = MessageBoxResult.ANULUJ;
                     break;
                 case "USUŃ":
-                    result = MyResult.USUN;
+                    result = MessageBoxResult.USUN;
                     break;
                 case "POMIŃ":
-                    result = MyResult.POMIN;
+                    result = MessageBoxResult.POMIN;
                     break;
             }
 
@@ -162,7 +166,7 @@ namespace SerwisMaster
 
 
 
-    public enum MyResult
+    public enum MessageBoxResult
     {
         OK,
         POPRAW,
@@ -177,6 +181,7 @@ namespace SerwisMaster
         OkAnuluj,
         PominAnuluj,
         Popraw,
+        PominPopraw,
         Usun,
         UsunAnuluj,
         UsunPopraw

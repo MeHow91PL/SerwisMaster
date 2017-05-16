@@ -18,7 +18,7 @@ namespace SerwisMaster
         public Polaczenie(string nazwa, string group, string opis, string haslo, string typ,string id = "", object parent = null) : base(nazwa,group,opis,id,parent)
         {
             this.Tag = "3" + nazwa;
-            this.Header = this.nazwa;
+            this.Header = this.Nazwa;
             this.haslo = haslo;
             this.typ = typ;
             this.ContextMenu = stworzContextMenu();
@@ -67,8 +67,8 @@ namespace SerwisMaster
         public void edytujPolaczenieClick(object sender, RoutedEventArgs e)
         {
             Polaczenie polaczenie = getSenderParent(sender) as Polaczenie;
-            OknoPolaczenia oknoPolaczenia = new OknoPolaczenia((polaczenie.Parent as Folder).id, polaczenie.id );
-            oknoPolaczenia.nazwaTextBox.Text = polaczenie.nazwa;
+            OknoPolaczenia oknoPolaczenia = new OknoPolaczenia((polaczenie.Parent as Folder).Id, polaczenie.Id );
+            oknoPolaczenia.nazwaTextBox.Text = polaczenie.Nazwa;
             oknoPolaczenia.hasloTextBox.Text = polaczenie.haslo;
             oknoPolaczenia.rodzajComboBox.IsEnabled = false;
 
@@ -93,12 +93,12 @@ namespace SerwisMaster
             Klient klient = polaczenie.Parent as Klient;
 
             if (MyMessageBox.Show("Czy na pewno chcesz usunąć to połączenie?", "Usuń element",
-                MyMessageBoxButtons.OkAnuluj) == MyResult.OK)
+                MyMessageBoxButtons.OkAnuluj) == MessageBoxResult.OK)
             {
 
                 klient.Items.Remove(polaczenie);
                 Thread nowyWatek = new Thread(usunPolaczenie);
-                nowyWatek.Start(polaczenie.id);
+                nowyWatek.Start(polaczenie.Id);
 
                 CollectionViewSource.GetDefaultView(klient.Items).Refresh();
             }

@@ -19,12 +19,12 @@ namespace SerwisMaster
             : base( klient )
         {
             this.klient = klient;
-            nazwaTextBox.Text = klient.nazwa;
+            nazwaTextBox.Text = klient.Nazwa;
             emailList = klient.emailList;
             telefonList = klient.telefonList;
             daneLogowaniaList = klient.daneLogowaniaList;
             opisRichTextbox.Document.Blocks.Clear();
-            opisRichTextbox.Document.Blocks.Add(new Paragraph(new Run(klient.opis)) { Margin = new Thickness(0) });
+            opisRichTextbox.Document.Blocks.Add(new Paragraph(new Run(klient.Opis)) { Margin = new Thickness(0) });
             dodajKlientaButton.Content = "Zapisz";
             Title = "Edytuj klienta";
             base.ustawZrodlaList();
@@ -47,7 +47,7 @@ namespace SerwisMaster
 
                 foreach(XmlNode node in nodeList)
                 {
-                    if(node.Attributes["Id"].InnerText == klient.id)
+                    if(node.Attributes["Id"].InnerText == klient.Id)
                     {
                         xml["Connections"].RemoveChild(node);
                     }
@@ -56,11 +56,11 @@ namespace SerwisMaster
                 xml.Save(Properties.Settings.Default.baseXmlPath);
 
                 
-                this.klient.nazwa = nazwaTextBox.Text;
+                this.klient.Nazwa = nazwaTextBox.Text;
                 this.klient.emailList = this.emailList;
                 this.klient.telefonList = this.telefonList;
                 this.klient.daneLogowaniaList = this.daneLogowaniaList;
-                this.klient.opis = new TextRange(opisRichTextbox.Document.ContentStart, opisRichTextbox.Document.ContentEnd).Text;
+                this.klient.Opis = new TextRange(opisRichTextbox.Document.ContentStart, opisRichTextbox.Document.ContentEnd).Text;
                 Serializator.serializuj(this.klient);
 
                 MainWindow.aktualizujTreeView(MainWindow.listOfClients);

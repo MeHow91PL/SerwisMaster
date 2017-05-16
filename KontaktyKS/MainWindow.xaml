@@ -188,7 +188,7 @@
                             <Image Width="auto" Height="auto" Source="Images/edit.png" ></Image>
                         </MenuItem.Icon>
                     </MenuItem>
-                    <MenuItem x:Name="importRDM" Header="Import kontaktów z RDM" Click="importRDM_Click" Background="{x:Null}" Foreground="Black" ToolTip="Brak uprawnień do importu" IsEnabled="False">
+                    <MenuItem x:Name="importRDM" Header="Import kontaktów z RDM" Click="importRDM_Click" Background="{x:Null}" Foreground="Black" ToolTip="Brak uprawnień do importu" IsEnabled="True">
                         <MenuItem.Icon>
                             <Image Width="auto" Height="auto" Source="Images/edit.png" ></Image>
                         </MenuItem.Icon>

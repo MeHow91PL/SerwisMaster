@@ -8,9 +8,11 @@ using System.Threading.Tasks;
 namespace SerwisMaster.Models
 {
     [Table("Elementy")]
-    public partial class Elementy
+    public class ElementModel
     {
         public int Id { get; set; }
+
+        public string Klucz { get; set; }
 
         public RodzajElementu Rodzaj { get; set; }
 
@@ -18,15 +20,20 @@ namespace SerwisMaster.Models
 
         public string Opis { get; set; }
 
-        public int IdRodzica { get; set; }
+        public int ParentId { get; set; }
 
-        public virtual List<Elementy> Dzieci { get; set; }
+        public string KluczRodzica { get; set; }
+
+        public virtual List<ElementModel> Dzieci { get; set; }
     }
 
     public enum RodzajElementu
     {
         Folder,
         Klient,
+        Rdp,
+        TeamViewer,
+        WebBrowser,
         Inne
     }
 }

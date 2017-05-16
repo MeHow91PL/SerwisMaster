@@ -8,79 +8,138 @@ using System.Windows.Controls;
 using System.Xml;
 using ImportFromRemoteDesktopManager;
 using System.Collections;
+using SerwisMaster.BL;
+using SerwisMaster.Models;
 
 namespace SerwisMaster
 {
     class ImportRemoteDesktopManager
     {
-        static uint ilosPominietychElementow = 0;
-        static uint ilosZaimportowanychElementow = 0;
+        static int ilosPominietychElementow = 0;
+        static int IloscPrzygotowanychDoImportu = 0;
+        static int IloscPoprawnieZaimportowanych = 0;
 
-        public static void ImportRDM(string databasePath)
+        public static void ImportRdmToLocalDb(string databasePath)
         {
             try
             {
-                XmlDocument xml = new XmlDocument();
-                xml.Load(Properties.Settings.Default.baseXmlPath);
-                XmlNodeList nodeList = xml["Connections"].ChildNodes;
+                IBazaDanych db = new BazaLocalDb();
+
                 List<string> listaIdIstniejacychElementow = new List<string>();
-                foreach (XmlNode node in nodeList)
+                foreach (var item in db.PobierzWszystkieElementy())
                 {
-                    listaIdIstniejacychElementow.Add(node.Attributes["Id"].InnerText);
+                    listaIdIstniejacychElementow.Add(item.Klucz);
                 }
 
                 List<GroupRDM> groupsRdmList = ImportOfElements.GetGroupsList(databasePath);
                 List<Folder> groupsList = ConvGroupRdmToFolder(groupsRdmList, listaIdIstniejacychElementow);
+                IloscPrzygotowanychDoImportu = groupsList.Count;
 
+                foreach (var item in groupsList) //pętla testowa
+                {
+                    Folder element = new Folder() { Klucz = item.Klucz, KluczRodzica = item.KluczRodzica, Nazwa = item.Nazwa, Opis = item.Opis };
+                    db.DodajElement(element);
+                    IloscPoprawnieZaimportowanych++;
+                }
                 List<TeamViewerRDM> teamViewersRdmList = ImportOfElements.GetTeamViewersList(databasePath);
                 List<TeamViewer> teamViewers = ConvertTeamViewerRdmToTeamViewer(teamViewersRdmList, groupsRdmList, listaIdIstniejacychElementow);
+                IloscPrzygotowanychDoImportu += teamViewers.Count;
 
                 List<RdpRDM> rdpRdmList = ImportOfElements.GetRdpList(databasePath);
                 List<Rdp> rdpList = ConvertRdpRdmToRdp(rdpRdmList, groupsRdmList, listaIdIstniejacychElementow);
+                IloscPrzygotowanychDoImportu += rdpList.Count;
 
-
-                foreach (Folder groupItem in groupsList)
-                {
-                    Serializator.serializuj(groupItem);
-                    ilosZaimportowanychElementow++;
-                }
-                MyMessageBox.Show("Import kontaktów zakończony pomyślnie.\nIlość zaimportowanych elementów: " + ilosZaimportowanychElementow +
-                    "\nIlość pominiętych elementów: " + ilosPominietychElementow, "Import zakończony",MyMessageBoxButtons.Ok);
-
-                MainWindow.aktualizujTreeView(MainWindow.listOfClients);
+                MyMessageBox.Show("Import kontaktów zakończony pomyślnie.\nIlość zaimportowanych elementów: " + IloscPoprawnieZaimportowanych +
+                   "\nIlość błędnych elementów: " + (IloscPrzygotowanychDoImportu - IloscPoprawnieZaimportowanych) +
+                    "\nIlość pominiętych elementów: " + ilosPominietychElementow, "Import zakończony", MyMessageBoxButtons.Ok);
             }
-            catch (Exception ex)
+            catch (Exception)
             {
-                MyMessageBox.Show(ex.Message, "Błąd importu!", MyMessageBoxButtons.Ok);
+                throw;
             }
-
         }
+
+        //public static void ImportRDM(string databasePath)
+        //{
+        //    try
+        //    {
+        //        XmlDocument xml = new XmlDocument();
+        //        xml.Load(Properties.Settings.Default.baseXmlPath);
+        //        XmlNodeList nodeList = xml["Connections"].ChildNodes;
+        //        List<string> listaIdIstniejacychElementow = new List<string>();
+        //        foreach (XmlNode node in nodeList)
+        //        {
+        //            listaIdIstniejacychElementow.Add(node.Attributes["Id"].InnerText);
+        //        }
+
+        //        List<GroupRDM> groupsRdmList = ImportOfElements.GetGroupsList(databasePath);
+        //        List<Folder> groupsList = ConvGroupRdmToFolder(groupsRdmList, listaIdIstniejacychElementow);
+
+        //        List<TeamViewerRDM> teamViewersRdmList = ImportOfElements.GetTeamViewersList(databasePath);
+        //        List<TeamViewer> teamViewers = ConvertTeamViewerRdmToTeamViewer(teamViewersRdmList, groupsRdmList, listaIdIstniejacychElementow);
+
+        //        List<RdpRDM> rdpRdmList = ImportOfElements.GetRdpList(databasePath);
+        //        List<Rdp> rdpList = ConvertRdpRdmToRdp(rdpRdmList, groupsRdmList, listaIdIstniejacychElementow);
+
+
+        //        foreach (Folder groupItem in groupsList)
+        //        {
+        //            Serializator.serializuj(groupItem);
+        //            ilosZaimportowanychElementow++;
+        //        }
+        //        MyMessageBox.Show("Import kontaktów zakończony pomyślnie.\nIlość zaimportowanych elementów: " + ilosZaimportowanychElementow +
+        //            "\nIlość pominiętych elementów: " + ilosPominietychElementow, "Import zakończony", MyMessageBoxButtons.Ok);
+
+        //        MainWindow.aktualizujTreeView(MainWindow.listOfClients);
+        //    }
+        //    catch (Exception ex)
+        //    {
+        //        MyMessageBox.Show(ex.Message, "Błąd importu!", MyMessageBoxButtons.Ok);
+        //    }
+
+        //}
 
         private static List<Folder> ConvGroupRdmToFolder(List<GroupRDM> list, List<string> listaIdIstniejacychElementow)
         {
             List<Folder> fols = new List<Folder>();
             list.OrderBy(e => e.group);
+            bool wyswietlPytanie = true;
+            MessageBoxResult result = MessageBoxResult.POMIN;
 
-            for(int i = 0; i < list.Count; i++)
+            for (int i = 0; i < list.Count; i++) //pętla przegląda elementy, żeby sprawdzić czy pozycje importowane już istnieją w bazie
             {
-                if(listaIdIstniejacychElementow.Any(a => a == list[i].id))
+                if (listaIdIstniejacychElementow.Any(a => a == list[i].id))
                 {
-                    list.Remove(list[i]);
-                    ilosPominietychElementow++;     
+                    if (wyswietlPytanie)
+                    {
+                        result = MyMessageBox.Show("Próbujesz zaimportować elementy, które już są w bazie danych. Co zrobić z tymi elementami?", "Znaleziono duplikaty", MyMessageBoxButtons.PominPopraw);
+                        wyswietlPytanie = false;
+                    }
+
+                    if (result == MessageBoxResult.POMIN)
+                    {
+                        // MyMessageBox.Show("Istniejące elementy zostaną pominięte w impocie!");
+                        list.Remove(list[i]);
+                        ilosPominietychElementow++;
+                    }
+                    else if (result == MessageBoxResult.POPRAW)
+                    {
+                        // MyMessageBox.Show("Istniejące elementy zostaną podmienione na elementy z importowanej bazy!");
+                    }
                 }
             }
 
             foreach (GroupRDM fol in list)
             {
-                string groupId = "";
+                string groupId = ""; //pole poszłuży do odnalezienia id rodzica na podstawie ciągu grupy z RDM
 
                 if (fol.name != fol.group)
                 {
                     string folGroup = "";
                     try
                     {
-                            folGroup = fol.group.Replace("\\" + fol.name, "");
-                            groupId = list.Single(f => f.group.ToUpper().TrimEnd() == folGroup.ToUpper().TrimEnd()).id;
+                        folGroup = fol.group.Replace("\\" + fol.name, "");
+                        groupId = list.Single(f => f.group.ToUpper().TrimEnd() == folGroup.ToUpper().TrimEnd()).id;
                     }
                     catch (Exception ex)
                     {
@@ -88,7 +147,7 @@ namespace SerwisMaster
                         return new List<Folder>();
                     }
                 }
-                fols.Add(new Folder(fol.name,fol.group, "", fol.id, null));
+                fols.Add(new Folder(fol.name, groupId, "", fol.id));
             }
 
             return fols;
@@ -109,11 +168,12 @@ namespace SerwisMaster
 
         private static List<TeamViewer> ConvertTeamViewerRdmToTeamViewer(List<TeamViewerRDM> teamViewersRdmList, List<GroupRDM> groups, List<string> listaIdIstniejacychElementow)
         {
-            List<TeamViewer> list= new List<TeamViewer>();
+            IBazaDanych db = new BazaLocalDb();
+            List<TeamViewer> list = new List<TeamViewer>();
 
             for (int i = 0; i < list.Count; i++)
             {
-                if (listaIdIstniejacychElementow.Any(a => a == list[i].id))
+                if (listaIdIstniejacychElementow.Any(a => a == list[i].Id))
                 {
                     list.Remove(list[i]);
                     ilosPominietychElementow++;
@@ -126,26 +186,28 @@ namespace SerwisMaster
 
                 foreach (var item in groups)
                 {
-                    if(item.group.Length >= teamVerwerRdm.group.Length && item.group.Substring(0, teamVerwerRdm.group.Length) == teamVerwerRdm.group)
+                    if (item.group.Length >= teamVerwerRdm.group.Length && item.group.Substring(0, teamVerwerRdm.group.Length) == teamVerwerRdm.group)
                     {
                         group = item.id;
                     }
                 }
 
-                Serializator.serializuj(new TeamViewer(teamVerwerRdm.name, teamVerwerRdm.group, teamVerwerRdm.description, "", teamVerwerRdm.connectionType, teamVerwerRdm.teamViewerId));
-                ilosZaimportowanychElementow++;
+                TeamViewer tv = new TeamViewer(teamVerwerRdm.name, group, teamVerwerRdm.description, "", teamVerwerRdm.connectionType, teamVerwerRdm.teamViewerId, teamVerwerRdm.id);
+                db.DodajElement(tv);
+                IloscPoprawnieZaimportowanych++;
             }
 
             return list;
         }
 
-        private static List<Rdp> ConvertRdpRdmToRdp(List<RdpRDM> rdpRdmList, List<GroupRDM> groups, List<string> listaIdIstniejacychElementow) 
+        private static List<Rdp> ConvertRdpRdmToRdp(List<RdpRDM> rdpRdmList, List<GroupRDM> groups, List<string> listaIdIstniejacychElementow)
         {
-            List<Rdp> list= new List<Rdp>();
+            IBazaDanych db = new BazaLocalDb();
+            List<Rdp> list = new List<Rdp>();
 
             for (int i = 0; i < list.Count; i++)
             {
-                if (listaIdIstniejacychElementow.Any(a => a == list[i].id))
+                if (listaIdIstniejacychElementow.Any(a => a == list[i].Id))
                 {
                     list.Remove(list[i]);
                     ilosPominietychElementow++;
@@ -163,8 +225,9 @@ namespace SerwisMaster
                         group = item.id;
                     }
                 }
-                Serializator.serializuj(new Rdp(RdpRdm.name, group, RdpRdm.description, "hasło", "Rdp", RdpRdm.url, "", RdpRdm.id));
-                ilosZaimportowanychElementow++;
+                Rdp rdp = new Rdp(RdpRdm.name, group, RdpRdm.description, "hasło", "Rdp", RdpRdm.url, "", RdpRdm.id);
+                db.DodajElement(rdp);
+                IloscPoprawnieZaimportowanych++;
             }
             return list;
         }

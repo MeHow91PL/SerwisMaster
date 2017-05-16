@@ -11,6 +11,7 @@ using System.Windows.Media;
 using System.Drawing;
 using System.Windows.Media.Imaging;
 using System.Xml;
+using SerwisMaster.Models;
 
 namespace SerwisMaster
 {
@@ -20,10 +21,11 @@ namespace SerwisMaster
         public List<Telefon> telefonList;
         public List<DaneLogowania> daneLogowaniaList;
 
-        public Klient(string nazwa, string group, string opis, List<Email> emailList, List<Telefon> telefonList,
-            List<DaneLogowania> daneLogowaniaList, string id="", object parent=null)
-            : base(nazwa, group, opis,id, parent)
+        public Klient(string nazwa, string kluczRodzica, string opis, List<Email> emailList, 
+            List<Telefon> telefonList, List<DaneLogowania> daneLogowaniaList, string klucz="", object parent=null)
+            : base(nazwa, kluczRodzica, opis,klucz, parent)
         {
+            this.Rodzaj = RodzajElementu.Klient;
             this.Tag = "1" + nazwa;
             this.emailList = emailList;
             this.telefonList = telefonList;
@@ -41,7 +43,7 @@ namespace SerwisMaster
         {
             if (disposing)
             {
-                nazwa = string.Empty;
+                Nazwa = string.Empty;
                 emailList = null;
                 telefonList = null;
                 daneLogowaniaList = null;
@@ -88,7 +90,7 @@ namespace SerwisMaster
             this.IsExpanded = true;
 
             Klient klient = getSenderParent(sender) as Klient;
-            OknoPolaczenia dodajPolaczenie = new OknoPolaczenia(klient.id);
+            OknoPolaczenia dodajPolaczenie = new OknoPolaczenia(klient.Id);
             dodajPolaczenie.ShowDialog();
 
             MainWindow.aktualizujTreeView(MainWindow.listOfClients);

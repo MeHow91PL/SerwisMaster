@@ -39,23 +39,6 @@ namespace SerwisMaster
         public MainWindow()
         {
             InitializeComponent();
-
-            //Elementy elem = new Elementy { Nazwa = "Folder1", Rodzaj = RodzajElementu.Folder, Id = 1 };
-            //Elementy elem2 = new Elementy { Nazwa = "Folder2", Rodzaj = RodzajElementu.Folder, Id = 2, IdRodzica = 1 };
-            //Elementy elem3 = new Elementy { Nazwa = "Klient1", Rodzaj = RodzajElementu.Klient, Id = 3, IdRodzica = 1 };
-            //Elementy elem4 = new Elementy { Nazwa = "Inne", Rodzaj = RodzajElementu.Inne, Id = 4 };
-
-            //db.Elementy.Add(elem);
-            //db.Elementy.Add(elem2);
-            //db.Elementy.Add(elem3);
-            //db.Elementy.Add(elem4);
-            //db.SaveChanges();
-
-            //usun();
-
-            // System.Windows.Forms.MessageBox.Show(test);
-            //UruchomAplikacje(); //BAZA XML
-            //listaKlientowTreeView.ItemsSource = bazaDanych.pobierzElementy();
             listaKlientowTreeView.ItemsSource = bazaDanych.PobierzWszystkieElementy();
         }
 
@@ -263,13 +246,13 @@ namespace SerwisMaster
                 {
                     Element tempFolder = queueBeforeRefresh.Dequeue();
                     if (tempFolder.IsExpanded)
-                        expandedItems.Add(tempFolder.id);
+                        expandedItems.Add(tempFolder.Id);
 
                     if (tempFolder.Visibility == Visibility.Visible)
-                        visibleElements.Add(tempFolder.id);
+                        visibleElements.Add(tempFolder.Id);
 
                     if (tempFolder.IsSelected)
-                        selectedItemId = tempFolder.id;
+                        selectedItemId = tempFolder.Id;
 
                     if (tempFolder.HasItems)
                     {
@@ -297,18 +280,18 @@ namespace SerwisMaster
                 {
                     Element tempElement = queueAfterRefresh.Dequeue();
 
-                    if (expandedItems.Exists(f => f == tempElement.id))
+                    if (expandedItems.Exists(f => f == tempElement.Id))
                         tempElement.IsExpanded = true;
 
                     if (pierwszeLadowanieListy == false)//sprawdza czy jest to pierwsze załadowanie elementów na liste.
                     {
-                        if (visibleElements.Exists(e => e == tempElement.id))
+                        if (visibleElements.Exists(e => e == tempElement.Id))
                             tempElement.Visibility = Visibility.Visible;
                         else
                             tempElement.Visibility = Visibility.Collapsed;
                     }
 
-                    if (tempElement.id == selectedItemId)
+                    if (tempElement.Id == selectedItemId)
                         tempElement.IsSelected = true;
 
                     if (tempElement.HasItems)
@@ -397,7 +380,7 @@ namespace SerwisMaster
                 if (selectedItem != null)
                 {
                     opisRichTextBox.Document.Blocks.Clear();
-                    opisRichTextBox.Document.Blocks.Add(new Paragraph(new Run(selectedItem.opis)) { Margin = new Thickness(0) });
+                    opisRichTextBox.Document.Blocks.Add(new Paragraph(new Run(selectedItem.Opis)) { Margin = new Thickness(0) });
                 }
 
                 if (selectedItem is Klient)
@@ -715,7 +698,7 @@ namespace SerwisMaster
                                 elem = element as Element;
                             if (elem != null)
                             {
-                                bool a = elem.nazwa.ToUpper().Contains(szukanyString.ToUpper());
+                                bool a = elem.Nazwa.ToUpper().Contains(szukanyString.ToUpper());
                                 if (a == true)
                                 {
                                     if (elem.HasItems)
@@ -807,7 +790,7 @@ namespace SerwisMaster
                 if (fileDialog.ShowDialog() == true)
                 {
                     string rdmDatabasePath = fileDialog.FileName;
-                    ImportRemoteDesktopManager.ImportRDM(rdmDatabasePath);
+                    ImportRemoteDesktopManager.ImportRdmToLocalDb(rdmDatabasePath);
                 }
             }
             catch (Exception ex)
@@ -1116,7 +1099,7 @@ namespace SerwisMaster
                             if ((finalDropEffect == DragDropEffects.Move) && (_target != null))
                             {
                                 // A Move drop was accepted
-                                if (!draggedItem.id.ToString().Equals(_target.id.ToString()))
+                                if (!draggedItem.Id.ToString().Equals(_target.Id.ToString()))
                                 {
                                     CopyItem(draggedItem, _target);
                                     _target = null;
@@ -1194,7 +1177,7 @@ namespace SerwisMaster
             try
             {
                 bool _isEqual = false;
-                if (!_sourceItem.id.ToString().Equals(_targetItem.id.ToString()))
+                if (!_sourceItem.Id.ToString().Equals(_targetItem.Id.ToString()))
                 {
                     _isEqual = true;
                 }
@@ -1211,7 +1194,7 @@ namespace SerwisMaster
         {
 
             //Asking user wether he want to drop the dragged Element here or not
-            if (MyMessageBox.Show("Czy na pewno chcesz przenieść element " + _sourceItem.nazwa.ToString() + " do " + _targetItem.nazwa.ToString(), "Przenoszenie", MyMessageBoxButtons.OkAnuluj) == MyResult.OK)
+            if (MyMessageBox.Show("Czy na pewno chcesz przenieść element " + _sourceItem.Nazwa.ToString() + " do " + _targetItem.Nazwa.ToString(), "Przenoszenie", MyMessageBoxButtons.OkAnuluj) == MessageBoxResult.OK)
             {
                 try
                 {
@@ -1223,9 +1206,9 @@ namespace SerwisMaster
                     {
                         foreach (Element item in allElements)
                         {
-                            if (item.id == _sourceItem.id)
+                            if (item.Id == _sourceItem.Id)
                             {
-                                listaIdWykluczonychElementow.Add(item.id);
+                                listaIdWykluczonychElementow.Add(item.Id);
                                 Queue<Element> kolejkaPrzegladaniaDzieciWezlaItem = new Queue<Element>();
                                 kolejkaPrzegladaniaDzieciWezlaItem.Enqueue(item);
 
@@ -1240,7 +1223,7 @@ namespace SerwisMaster
                                             foreach (Element child in temp.Items)
                                             {
                                                 kolejkaPrzegladaniaDzieciWezlaItem.Enqueue(child);
-                                                listaIdWykluczonychElementow.Add(child.id);
+                                                listaIdWykluczonychElementow.Add(child.Id);
                                             }
                                         }
                                     }
@@ -1250,7 +1233,7 @@ namespace SerwisMaster
                         }
                     }
 
-                    if (listaIdWykluczonychElementow != null && listaIdWykluczonychElementow.Count > 0 && listaIdWykluczonychElementow.Contains(_targetItem.id))
+                    if (listaIdWykluczonychElementow != null && listaIdWykluczonychElementow.Count > 0 && listaIdWykluczonychElementow.Contains(_targetItem.Id))
                     {
                         throw new ProbaDodaniaRodzicaElementuDoDzieckaException("Próba dodania węzłu rodzica do elementu podległego (dziecka)");
                     }
@@ -1291,7 +1274,7 @@ namespace SerwisMaster
 
                 foreach (XmlNode item in nodeList)
                 {
-                    if (item.Attributes["Id"].InnerText == _sourceItem.id)
+                    if (item.Attributes["Id"].InnerText == _sourceItem.Id)
                     {
                         sourceItem = item;
                         break;
@@ -1304,7 +1287,7 @@ namespace SerwisMaster
                     //    break;
                 }
 
-                sourceItem.Attributes["Group"].InnerText = _targetItem.id;
+                sourceItem.Attributes["Group"].InnerText = _targetItem.Id;
                 xml.Save(Properties.Settings.Default.baseXmlPath);
                 MainWindow.aktualizujTreeView(MainWindow.listOfClients);
             }
@@ -1393,7 +1376,7 @@ namespace SerwisMaster
 
                     foreach (XmlNode node in nodeList)
                     {
-                        if (node.Attributes["Id"].InnerText == ((listaKlientowTreeView.SelectedItem) as Element).id)
+                        if (node.Attributes["Id"].InnerText == ((listaKlientowTreeView.SelectedItem) as Element).Id)
                         {
                             node.Attributes["Description"].InnerText = new TextRange(opisRichTextBox.Document.ContentStart, opisRichTextBox.Document.ContentEnd).Text;
                             xml.Save(Properties.Settings.Default.baseXmlPath);
@@ -1419,7 +1402,7 @@ namespace SerwisMaster
         {
             try
             {
-                if (MyMessageBox.Show("Czy na pewno zamknąć aplikację?", "Zamykanie aplikacji", MyMessageBoxButtons.OkAnuluj) == MyResult.OK)
+                if (MyMessageBox.Show("Czy na pewno zamknąć aplikację?", "Zamykanie aplikacji", MyMessageBoxButtons.OkAnuluj) == MessageBoxResult.OK)
                 {
                     Properties.Settings.Default.previouslyWindowHeight = this.Height;
                     Properties.Settings.Default.previouslyWindowWidth = this.Width;

@@ -18,6 +18,6 @@ namespace SerwisMaster.DAL
         }
 
         public DbSet<Klienci> Klienci { get; set; }
-        public DbSet<Models.Elementy> Elementy { get; set; }
+        public DbSet<ElementModel> Elementy { get; set; }
     }
 }

@@ -65,7 +65,7 @@ namespace SerwisMaster
 
             foreach (XmlNode node in nodelist)
             {
-                if (node.Attributes["Id"].InnerText == folder.id)
+                if (node.Attributes["Id"].InnerText == folder.Id)
                     node.Attributes["Name"].InnerText = ((folder.Header as WrapPanel).Children[1] as TextBox).Text;
             }
 

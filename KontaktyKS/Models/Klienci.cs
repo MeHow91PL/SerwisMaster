@@ -12,7 +12,7 @@ namespace SerwisMaster.Models
 
         public string haslo { get; set; }
 
-        public virtual Elementy Element{ get; set; }
+        public virtual ElementModel Element { get; set; }
 
     }
 }

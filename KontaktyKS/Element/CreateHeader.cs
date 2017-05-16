@@ -22,19 +22,19 @@ namespace SerwisMaster
             {
                 case "SerwisMaster.TeamViewer":
                     obrazek = new Uri("Images/tvIcon.png", UriKind.Relative);
-                    nazwa = ( obj as TeamViewer ).nazwa;
+                    nazwa = ( obj as TeamViewer ).Nazwa;
                     break;
                 case "SerwisMaster.Klasy_połączenia.Rdp":
                     obrazek = new Uri("Images/zdalnyIcon.png", UriKind.Relative);
-                    nazwa = ( obj as SerwisMaster.Klasy_połączenia.Rdp ).nazwa;
+                    nazwa = ( obj as SerwisMaster.Klasy_połączenia.Rdp ).Nazwa;
                     break;
                 case "SerwisMaster.Klient":
                     obrazek = new Uri("Images/userIcon.png", UriKind.Relative);
-                    nazwa = ( obj as Klient).nazwa;
+                    nazwa = ( obj as Klient).Nazwa;
                     break;
                 case "SerwisMaster.Folder":
                     obrazek = new Uri("Images/folderIcon.png", UriKind.Relative);
-                    nazwa = ( obj as Folder).nazwa;
+                    nazwa = ( obj as Folder).Nazwa;
                     break;
             }
 

@@ -16,9 +16,10 @@ namespace SerwisMaster
         public TeamViewer(string nazwa, string group, string opis, string haslo, string typ, string teamViewerId, string id="", object parent=null)
             : base(nazwa, group, opis, haslo, typ, id, parent)
         {
+            this.Rodzaj = Models.RodzajElementu.TeamViewer;
             this.teamViewerId = teamViewerId;
             Header = CreateHeader.createItemHeader(this);
-            this.ToolTip = new ToolTip() { Content = this.nazwa + "\nID: "+ this.teamViewerId + "\nHasło: " + haslo};
+            this.ToolTip = new ToolTip() { Content = this.Nazwa + "\nID: "+ this.teamViewerId + "\nHasło: " + haslo};
         }
 
         public override void uruchomPolaczenie(object sender, MouseButtonEventArgs e)

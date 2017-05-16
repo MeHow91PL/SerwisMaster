@@ -10,7 +10,7 @@ namespace SerwisMaster
     {
         public static void zamknijOkienko(Window window)
         {
-            if (MyMessageBox.Show("Czy na pewno chcesz opuścić okno bez zapisywania?", "Zamykanie okna", MyMessageBoxButtons.OkAnuluj) == MyResult.OK)
+            if (MyMessageBox.Show("Czy na pewno chcesz opuścić okno bez zapisywania?", "Zamykanie okna", MyMessageBoxButtons.OkAnuluj) == MessageBoxResult.OK)
             {
                 window.Close();
             }
