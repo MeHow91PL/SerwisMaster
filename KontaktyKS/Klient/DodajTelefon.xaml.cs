@@ -1,4 +1,5 @@
-﻿using System;
+﻿using SerwisMaster.Models;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -18,8 +19,8 @@ namespace SerwisMaster
     /// </summary>
     public partial class DodajTelefon : Window
     {
-        List<Telefon> tel;
-        public DodajTelefon(List<Telefon> tel)
+        List<TelefonModel> tel;
+        public DodajTelefon(List<TelefonModel> tel)
         {
             InitializeComponent();
             this.tel = tel;
@@ -52,7 +53,7 @@ namespace SerwisMaster
                 MessageBox.Show("Uzepełnij wszystkie pola!");
             else
             {
-                tel.Add(new Telefon { nazwa = nazwaTextBox.Text, numer = numerTextBox.Text });
+                tel.Add(new TelefonModel { Nazwa = nazwaTextBox.Text, NumerTelefonu = numerTextBox.Text });
                 this.Close();
             }
         }

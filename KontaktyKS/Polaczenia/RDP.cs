@@ -7,16 +7,17 @@ using System.Windows.Controls;
 using System.Windows.Media.Imaging;
 using System;
 using System.Windows;
+using SerwisMaster.Models;
 
-namespace SerwisMaster.Klasy_połączenia
+namespace SerwisMaster.Polaczenia
 {
-    class Rdp : Polaczenie
+    public class Rdp : Polaczenie
     {
         public string adresRDP = string.Empty;
         public string login = string.Empty;
 
-        public Rdp(string nazwa, string group, string opis, string haslo, string typ, string adresRDP, string login, string id="", object parent=null)
-            : base(nazwa, group, opis, haslo, typ, id, parent)
+        public Rdp(string nazwa, string kluczRodzica, string opis, string haslo, string adresRDP, string login, string klucz="", object parent=null)
+            : base(nazwa, kluczRodzica, opis, haslo, klucz, parent)
         {
             this.Rodzaj = Models.RodzajElementu.Rdp;
             this.adresRDP = adresRDP;
@@ -158,6 +159,19 @@ namespace SerwisMaster.Klasy_połączenia
                 MyMessageBox.Show(ex.Message, "Błąd", MyMessageBoxButtons.Ok);
                 return;
             }
+        }
+        public static implicit operator Rdp(RdpModel rdpModel)
+        {
+            Rdp rdp = new Rdp(
+                rdpModel.Element.Nazwa,
+                rdpModel.Element.KluczRodzica,
+                rdpModel.Element.Opis,
+                rdpModel.Haslo,
+                rdpModel.AdresRdp,
+                rdpModel.Login,
+                rdpModel.Element.Klucz
+            );
+            return rdp;
         }
     }
 }

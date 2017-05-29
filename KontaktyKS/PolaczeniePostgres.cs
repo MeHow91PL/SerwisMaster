@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using Npgsql;
 using System.Data;
-using SerwisMaster.Klasy_połączenia;
+using SerwisMaster.Polaczenia;
 
 namespace SerwisMaster
 {
@@ -69,9 +69,9 @@ namespace SerwisMaster
                     ListaElementow.Add(element);
                     ElementyNaLiscie.Add(element);
                 }
-                else if (ElementyNaLiscie.Any(e => e.Id == element.KluczRodzica)) //jeżeli element na rodzica i jest on już na liście to dodaj element jako item
+                else if (ElementyNaLiscie.Any(e => e.Klucz == element.KluczRodzica)) //jeżeli element na rodzica i jest on już na liście to dodaj element jako item
                 {
-                    Element parent = ElementyNaLiscie.Single(e => e.Id == element.KluczRodzica);
+                    Element parent = ElementyNaLiscie.Single(e => e.Klucz == element.KluczRodzica);
                     parent.Items.Add(element);
                     ElementyNaLiscie.Add(element);
                 }

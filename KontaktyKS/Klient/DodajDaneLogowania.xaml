@@ -1,14 +1,13 @@
 ﻿<Window x:Class="SerwisMaster.dodanieDanychLogowania"
         xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:local="clr-namespace:SerwisMaster"
+        xmlns:Models="clr-namespace:SerwisMaster.Models"
         Title="dodanieDanychLogowania" Height="300" Width="388" WindowStartupLocation="CenterScreen" PreviewKeyDown="Window_PreviewKeyDown">
     <Grid>
         <Label Content="System" Height="28" Margin="0,48,269,0" Name="label3" VerticalAlignment="Top" FontFamily="/SerwisMaster;component/Fonts/#Roboto" FontSize="14" HorizontalAlignment="Right" Width="63" />
-        <ComboBox Height="23" HorizontalAlignment="Left" Margin="116,50,0,0" Name="systemComboBox" VerticalAlignment="Top" Width="181" FontFamily="/SerwisMaster;component/Fonts/#Roboto" FontSize="14" TabIndex="0">
-            <ComboBoxItem Content="SZOI"/>
-            <ComboBoxItem Content="KS-PPS" />
-            <ComboBoxItem Content="KS-SOMED" />
-            <ComboBoxItem Content="Windows" />
+        <ComboBox Height="23" HorizontalAlignment="Left" Margin="116,50,0,0" Name="systemComboBox" VerticalAlignment="Top" Width="181" FontFamily="/SerwisMaster;component/Fonts/#Roboto" FontSize="14" TabIndex="0"
+                  ItemsSource="{Binding Source={local:EnumBindingSourceExtension {x:Type Models:RodzajSystemu}} }">
         </ComboBox>
         <Label Content="Login" Height="28" HorizontalAlignment="Right" Margin="0,90,269,0" Name="label1" VerticalAlignment="Top" FontFamily="/SerwisMaster;component/Fonts/#Roboto" FontSize="14" />
         <TextBox Height="23" HorizontalAlignment="Left" Margin="116,93,0,0" Name="loginTextBox" VerticalAlignment="Top" Width="181" FontFamily="/SerwisMaster;component/Fonts/#Roboto" FontSize="14" KeyDown="loginTextBox_KeyDown" TabIndex="1" />

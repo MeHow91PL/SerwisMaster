@@ -1,4 +1,4 @@
-﻿using SerwisMaster.Klasy_połączenia;
+﻿using SerwisMaster.Polaczenia;
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -173,7 +173,7 @@ namespace SerwisMaster
 
             for (int i = 0; i < list.Count; i++)
             {
-                if (listaIdIstniejacychElementow.Any(a => a == list[i].Id))
+                if (listaIdIstniejacychElementow.Any(a => a == list[i].Klucz))
                 {
                     list.Remove(list[i]);
                     ilosPominietychElementow++;
@@ -207,7 +207,7 @@ namespace SerwisMaster
 
             for (int i = 0; i < list.Count; i++)
             {
-                if (listaIdIstniejacychElementow.Any(a => a == list[i].Id))
+                if (listaIdIstniejacychElementow.Any(a => a == list[i].Klucz))
                 {
                     list.Remove(list[i]);
                     ilosPominietychElementow++;

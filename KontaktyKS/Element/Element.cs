@@ -1,4 +1,5 @@
-﻿using SerwisMaster.Models;
+﻿using SerwisMaster.BL;
+using SerwisMaster.Models;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations.Schema;
@@ -11,42 +12,43 @@ using System.Xml;
 
 namespace SerwisMaster
 {
+
     [Table("Elementy")]
     public abstract class Element : TreeViewItem
     {
+        static IBazaDanych db = new BazaLocalDb();
+
         public string Nazwa { get; set; }
-        public string Id { get; set; }
         public string Klucz { get; set; }
         public string KluczRodzica { get; set; }
         public string Opis { get; set; }
+        public StatusElementu Status{ get; set; }
         public RodzajElementu Rodzaj { get; set; }
         public object parent;
 
         public Element()
         {
             this.Nazwa = "";
-            this.Id = "";
             this.Klucz = "";
             this.KluczRodzica = "";
             this.Opis = "";
             this.parent = null;
         }
-        
-        public Element(string nazwa, string kluczRodzica, string opis , string klucz = "", object parent = null)
+
+        public Element(string nazwa, string kluczRodzica, string opis, string klucz = "", object parent = null)
         {
             this.Nazwa = nazwa;
 
             if (string.IsNullOrWhiteSpace(klucz))
                 klucz = Guid.NewGuid().ToString();
-            else
-                this.Id = klucz;
 
             this.Klucz = klucz;
+            this.Status = StatusElementu.Aktywny;
             this.KluczRodzica = kluczRodzica;
             this.Opis = opis;
             this.parent = parent;
 
-            
+
 
             this.Header = CreateHeader.createItemHeader(this);
             this.ContextMenu = CreateContextMenu();
@@ -106,6 +108,11 @@ namespace SerwisMaster
             }
         }
 
+        private void usun(object obj)
+        {
+            db.UkryjElementy(obj as IEnumerable<string>);
+        }
+
         private List<string> znajdzElementyPodlegle(Element element)
         {
             List<string> listaIdDoUsuniecia = new List<string>();
@@ -116,7 +123,7 @@ namespace SerwisMaster
             while (kolejkaElementow.Count > 0) //wyszukuje wszystkie Elementy do usunięcia
             {
                 Element tempElement = kolejkaElementow.Dequeue();
-                listaIdDoUsuniecia.Add(tempElement.Id);
+                listaIdDoUsuniecia.Add(tempElement.Klucz);
                 if (tempElement.HasItems)
                 {
                     foreach (Element o in tempElement.Items)
@@ -126,34 +133,7 @@ namespace SerwisMaster
                     }
                 }
             }
-
             return listaIdDoUsuniecia;
-        }
-
-        private void usun(object obj)
-        {
-            XmlDocument xml = new XmlDocument();
-            xml.Load(Properties.Settings.Default.baseXmlPath);
-            Queue<XmlNode> nodesToRemove = new Queue<XmlNode>();
-
-            List<string> listaIdDoUsuniecia = obj as List<string>;
-
-
-            XmlNodeList nodeList = xml["Connections"].ChildNodes;
-
-            foreach (XmlNode node in nodeList)
-            {
-                if (listaIdDoUsuniecia.Contains(node.Attributes["Id"].InnerText))
-                    nodesToRemove.Enqueue(node);
-            }
-
-            while (nodesToRemove.Count > 0)
-            {
-                XmlNode tempNode = nodesToRemove.Dequeue();
-                tempNode.ParentNode.RemoveChild(tempNode);
-            }
-
-            xml.Save(Properties.Settings.Default.baseXmlPath);
         }
 
         protected static object getSenderParent(object sender)

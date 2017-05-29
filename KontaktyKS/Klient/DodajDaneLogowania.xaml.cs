@@ -1,15 +1,7 @@
-﻿using System;
+﻿using SerwisMaster.Models;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 using System.Windows;
-using System.Windows.Controls;
-using System.Windows.Data;
-using System.Windows.Documents;
 using System.Windows.Input;
-using System.Windows.Media;
-using System.Windows.Media.Imaging;
-using System.Windows.Shapes;
 
 namespace SerwisMaster
 {
@@ -18,8 +10,8 @@ namespace SerwisMaster
     /// </summary>
     public partial class dodanieDanychLogowania : Window
     {
-        List<DaneLogowania> list = null;
-        public dodanieDanychLogowania(List<DaneLogowania> list, int system)
+        List<DaneLogowaniaModel> list = null;
+        public dodanieDanychLogowania(List<DaneLogowaniaModel> list, int system)
         {
             InitializeComponent();
             this.list = list;
@@ -64,7 +56,7 @@ namespace SerwisMaster
             }
             else
             {
-                list.Add(new DaneLogowania() { system = systemComboBox.Text.Trim(), login = loginTextBox.Text.Trim(), haslo = hasloTextBox.Text });
+                //list.Add(new DaneLogowaniaModel() { system = systemComboBox.Text.Trim(), login = loginTextBox.Text.Trim(), haslo = hasloTextBox.Text });
                 this.Close();
             }
         }

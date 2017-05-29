@@ -97,8 +97,12 @@ namespace SerwisMaster
                     box.buttonsStackPanel.Children.Add( MyMessageBox.createButton( "USUŃ", template) );
                     break;
                 case MyMessageBoxButtons.UsunAnuluj:
-                    box.buttonsStackPanel.Children.Add( MyMessageBox.createButton( "ANULUJ", template) );
-                    box.buttonsStackPanel.Children.Add( MyMessageBox.createButton( "USUŃ", template) );
+                    box.buttonsStackPanel.Children.Add(MyMessageBox.createButton("ANULUJ", template));
+                    box.buttonsStackPanel.Children.Add(MyMessageBox.createButton("USUŃ", template));
+                    break;
+                case MyMessageBoxButtons.TakNie:
+                    box.buttonsStackPanel.Children.Add(MyMessageBox.createButton("TAK", template));
+                    box.buttonsStackPanel.Children.Add(MyMessageBox.createButton("NIE", template));
                     break;
 
             }
@@ -145,6 +149,12 @@ namespace SerwisMaster
                 case "POMIŃ":
                     result = MessageBoxResult.POMIN;
                     break;
+                case "TAK":
+                    result = MessageBoxResult.TAK;
+                    break;
+                case "NIE":
+                    result = MessageBoxResult.NIE;
+                    break;
             }
 
             StackPanel tempStackPanel = (StackPanel)( sender as Button ).Parent;
@@ -172,7 +182,9 @@ namespace SerwisMaster
         POPRAW,
         ANULUJ,
         POMIN,
-        USUN
+        USUN,
+        TAK,
+        NIE
     }
 
     public enum MyMessageBoxButtons
@@ -184,7 +196,8 @@ namespace SerwisMaster
         PominPopraw,
         Usun,
         UsunAnuluj,
-        UsunPopraw
+        UsunPopraw,
+        TakNie
     }
         
 }

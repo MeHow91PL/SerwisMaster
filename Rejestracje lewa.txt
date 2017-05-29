@@ -1,0 +1,5 @@
+DDR2 SDRAM 400MHz
+
+SSTL 1.8
+
+Nazwa p³yty g³ównej	Gigabyte GA-G31M-S2L  (2 PCI, 1 PCI-E x1, 1 PCI-E x16, 2 DDR2 DIMM, Audio, Video, Gigabit LAN)

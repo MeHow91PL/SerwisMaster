@@ -4,7 +4,7 @@ using System.Windows.Controls;
 using System.Windows.Input;
 using System.Xml;
 using System.Text.RegularExpressions;
-using SerwisMaster.Klasy_połączenia;
+using SerwisMaster.Polaczenia;
 
 namespace SerwisMaster
 {
@@ -151,7 +151,7 @@ namespace SerwisMaster
                     //############# DODAJ TEAMVIEWER ###############################################################################
                     if (rodzajComboBox.Text == "TeamViewer")
                     {
-                        Serializator.serializuj(new TeamViewer(nazwaTextBox.Text, klientId, "", hasloTextBox.Text, "TeamViewer", loginTextBox.Text));
+                        //Serializator.serializuj(new TeamViewer(nazwaTextBox.Text, klientId, "", hasloTextBox.Text, "TeamViewer", loginTextBox.Text));
                     }
 
                     //############# DODAJ RDP ###############################################################################
@@ -159,7 +159,7 @@ namespace SerwisMaster
                     {
                         if (!string.IsNullOrWhiteSpace(adresTextBox.Text))
                         {
-                            Serializator.serializuj(new Rdp(nazwaTextBox.Text, klientId, "", hasloTextBox.Text, "Rdp", adresTextBox.Text, loginTextBox.Text));
+                           // Serializator.serializuj(new Rdp(nazwaTextBox.Text, klientId, "", hasloTextBox.Text, "Rdp", adresTextBox.Text, loginTextBox.Text));
                         }
                         else
                         {

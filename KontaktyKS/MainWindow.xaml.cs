@@ -1,13 +1,10 @@
 ﻿using Microsoft.Win32;
 using SerwisMaster.BL;
-using SerwisMaster.DAL;
 using SerwisMaster.Models;
 using System;
 using System.Collections.Generic;
-using System.Data.Entity;
 using System.Diagnostics;
 using System.IO;
-using System.Linq;
 using System.Threading;
 using System.Windows;
 using System.Windows.Controls;
@@ -39,12 +36,13 @@ namespace SerwisMaster
         public MainWindow()
         {
             InitializeComponent();
-            listaKlientowTreeView.ItemsSource = bazaDanych.PobierzWszystkieElementy();
+            listOfClients = this.listaKlientowTreeView;
+            aktualizujTreeView(listOfClients);
         }
 
-        
 
-        
+
+
         //private void UruchomAplikacje()
         //{
 
@@ -228,402 +226,113 @@ namespace SerwisMaster
 
         public static void aktualizujTreeView(TreeView listaKlientow)
         {
-            try
+            //try
+            //{
+            Queue<Element> queueBeforeRefresh = new Queue<Element>();
+            Queue<Element> queueAfterRefresh = new Queue<Element>();
+
+            //zapisuje klientów, którzy mają rozwiniętą listę połaczeń
+            List<string> expandedItems = new List<string>();
+            List<string> visibleElements = new List<string>();
+            string selectedItemId = "";
+            foreach (Element f in listaKlientow.Items)
             {
-                Queue<Element> queueBeforeRefresh = new Queue<Element>();
-                Queue<Element> queueAfterRefresh = new Queue<Element>();
+                queueBeforeRefresh.Enqueue(f);
+            }
 
-                //zapisuje klientów, którzy mają rozwiniętą listę połaczeń
-                List<string> expandedItems = new List<string>();
-                List<string> visibleElements = new List<string>();
-                string selectedItemId = "";
-                foreach (Element f in listaKlientow.Items)
+            while (queueBeforeRefresh.Count > 0)
+            {
+                Element tempFolder = queueBeforeRefresh.Dequeue();
+                if (tempFolder.IsExpanded)
+                    expandedItems.Add(tempFolder.Klucz);
+
+                if (tempFolder.Visibility == Visibility.Visible)
+                    visibleElements.Add(tempFolder.Klucz);
+
+                if (tempFolder.IsSelected)
+                    selectedItemId = tempFolder.Klucz;
+
+                if (tempFolder.HasItems)
                 {
-                    queueBeforeRefresh.Enqueue(f);
-                }
-
-                while (queueBeforeRefresh.Count > 0)
-                {
-                    Element tempFolder = queueBeforeRefresh.Dequeue();
-                    if (tempFolder.IsExpanded)
-                        expandedItems.Add(tempFolder.Id);
-
-                    if (tempFolder.Visibility == Visibility.Visible)
-                        visibleElements.Add(tempFolder.Id);
-
-                    if (tempFolder.IsSelected)
-                        selectedItemId = tempFolder.Id;
-
-                    if (tempFolder.HasItems)
+                    foreach (object f in tempFolder.Items)
                     {
-                        foreach (object f in tempFolder.Items)
-                        {
-                            if (f is Folder)
-                                queueBeforeRefresh.Enqueue(f as Folder);
-                        }
-                    }
-                }
-
-                listaKlientow.ItemsSource = null;
-                //listaKlientow.ItemsSource = Serializator.deserializuj(Properties.Settings.Default.baseXmlPath);
-
-                listaKlientow.ItemsSource = bazaDanych.PobierzWszystkieElementy();
-
-                //odczytuje klientów, którzy mają rozwiniętą listę połaczeń i są widoczne
-                foreach (Element f in listaKlientow.Items)
-                {
-                    queueAfterRefresh.Enqueue(f);
-                }
-
-
-                while (queueAfterRefresh.Count > 0)
-                {
-                    Element tempElement = queueAfterRefresh.Dequeue();
-
-                    if (expandedItems.Exists(f => f == tempElement.Id))
-                        tempElement.IsExpanded = true;
-
-                    if (pierwszeLadowanieListy == false)//sprawdza czy jest to pierwsze załadowanie elementów na liste.
-                    {
-                        if (visibleElements.Exists(e => e == tempElement.Id))
-                            tempElement.Visibility = Visibility.Visible;
-                        else
-                            tempElement.Visibility = Visibility.Collapsed;
-                    }
-
-                    if (tempElement.Id == selectedItemId)
-                        tempElement.IsSelected = true;
-
-                    if (tempElement.HasItems)
-                    {
-                        foreach (object f in tempElement.Items)
-                        {
-
-                            if (f is Folder)
-                                queueAfterRefresh.Enqueue(f as Folder);
-                        }
-                    }
-
-                }
-                pierwszeLadowanieListy = false;
-
-
-                Queue<Element> tempElements = new Queue<Element>();
-                allElements.Clear();
-                foreach (Element item in listaKlientow.Items)
-                {
-                    tempElements.Enqueue(item);
-                }
-
-
-                while (tempElements.Count > 0)
-                {
-                    Element tempElement = tempElements.Dequeue();
-                    allElements.Enqueue(tempElement);
-
-                    if (tempElement.HasItems)
-                    {
-                        foreach (Element child in tempElement.Items)
-                        {
-                            tempElements.Enqueue(child);
-                        }
+                        if (f is Folder)
+                            queueBeforeRefresh.Enqueue(f as Folder);
                     }
                 }
             }
-            catch (Exception ex)
+
+            listaKlientow.ItemsSource = null;
+            //listaKlientow.ItemsSource = Serializator.deserializuj(Properties.Settings.Default.baseXmlPath);
+
+            listaKlientow.ItemsSource = bazaDanych.PobierzWszystkieElementy();
+
+            //odczytuje klientów, którzy mają rozwiniętą listę połaczeń i są widoczne
+            foreach (Element f in listaKlientow.Items)
             {
-                MyMessageBox.Show("Treść błedu: \n" + ex.Message, "Nastąpił nieoczekiwany błąd", MyMessageBoxButtons.Ok);
+                queueAfterRefresh.Enqueue(f);
             }
 
-        }
 
-        private void dockPanel1_MouseLeftButtonDown(object sender, MouseButtonEventArgs e)
-        {
-            this.DragMove();
-        }
-
-
-        private void TreeViewItem_MouseDoubleClick(object sender, MouseButtonEventArgs e)
-        {
-            MyMessageBox.Show((sender as Element).Parent.ToString());
-        }
-
-        private void dropShadow(double blur)
-        {
-            tlo.Effect = new DropShadowEffect
+            while (queueAfterRefresh.Count > 0)
             {
-                Color = Colors.Black,
-                ShadowDepth = 0,
-                RenderingBias = System.Windows.Media.Effects.RenderingBias.Performance,
-                BlurRadius = blur,
-                Direction = 0,
-                Opacity = 1
-            };
-        }
+                Element tempElement = queueAfterRefresh.Dequeue();
 
-        private void Window_Deactivated(object sender, EventArgs e)
-        {
-            dropShadow(2);
-        }
+                if (expandedItems.Exists(f => f == tempElement.Klucz))
+                    tempElement.IsExpanded = true;
 
-        private void Window_Activated(object sender, EventArgs e)
-        {
-            dropShadow(20);
-        }
-
-        private void listaKlientowTreeView_SelectedItemChanged(object sender, RoutedPropertyChangedEventArgs<object> e)
-        {
-            try
-            {
-                Element selectedItem = e.NewValue as Element;
-
-                if (selectedItem != null)
+                if (pierwszeLadowanieListy == false)//sprawdza czy jest to pierwsze załadowanie elementów na liste.
                 {
-                    opisRichTextBox.Document.Blocks.Clear();
-                    opisRichTextBox.Document.Blocks.Add(new Paragraph(new Run(selectedItem.Opis)) { Margin = new Thickness(0) });
+                    if (visibleElements.Exists(e => e == tempElement.Klucz))
+                        tempElement.Visibility = Visibility.Visible;
+                    else
+                        tempElement.Visibility = Visibility.Collapsed;
                 }
 
-                if (selectedItem is Klient)
+                if (tempElement.Klucz == selectedItemId)
                 {
-                    rozwinPanele(selectedItem as Klient);
-
-                    dodajKlientaButtonDown.Visibility = Visibility.Collapsed;
-                    edytujKlientaButtonDown.Visibility = Visibility.Visible;
-                    usunKlientaButtonDown.Visibility = Visibility.Visible;
-
-                    dodajFolderButtonDown.Visibility = Visibility.Visible;
-                    edytujFolderButtonDown.Visibility = Visibility.Collapsed;
-                    usunFolderButtonDown.Visibility = Visibility.Collapsed;
-
-                    dodajPolaczenieButtonDown.Visibility = Visibility.Visible;
-                    edytujPolaczenieButtonDown.Visibility = Visibility.Collapsed;
-                    usunPolaczenieButtonDown.Visibility = Visibility.Collapsed;
-
+                    tempElement.IsSelected = true;
                 }
-                else if (selectedItem is Element)
+                if (tempElement.HasItems)
                 {
-
-                    if (selectedItem.Parent != null)
+                    foreach (object f in tempElement.Items)
                     {
-                        while (!(selectedItem.Parent is Klient))
-                        {
-                            if (selectedItem.Parent != null)
-                                selectedItem = selectedItem.Parent as Element;
-                            else
-                                goto parentIsNull;
-                        }
-                        rozwinPanele(selectedItem.Parent as Klient);
-
+                        if (f is Folder)
+                            queueAfterRefresh.Enqueue(f as Folder);
                     }
-
-
-                    parentIsNull:
-
-                    dodajKlientaButtonDown.Visibility = Visibility.Visible;
-                    edytujKlientaButtonDown.Visibility = Visibility.Collapsed;
-                    usunKlientaButtonDown.Visibility = Visibility.Collapsed;
-
-                    dodajFolderButtonDown.Visibility = Visibility.Visible;
-                    edytujFolderButtonDown.Visibility = Visibility.Visible;
-                    usunFolderButtonDown.Visibility = Visibility.Visible;
-
-                    dodajPolaczenieButtonDown.Visibility = Visibility.Collapsed;
-                    edytujPolaczenieButtonDown.Visibility = Visibility.Collapsed;
-                    usunPolaczenieButtonDown.Visibility = Visibility.Collapsed;
-
                 }
-                else if (selectedItem is Polaczenie)
+
+            }
+            pierwszeLadowanieListy = false;
+
+            Queue<Element> tempElements = new Queue<Element>();
+            foreach (Element item in listaKlientow.Items)
+            {
+                tempElements.Enqueue(item);
+            }
+
+            while (tempElements.Count > 0)
+            {
+                Element tempElement = tempElements.Dequeue();
+
+                if (tempElement.HasItems)
                 {
-                    dodajKlientaButtonDown.IsEnabled = false;
-                    //rozwinPanele(selectedItem.Parent as Klient);
-
-                    dodajKlientaButtonDown.Visibility = Visibility.Collapsed;
-                    edytujKlientaButtonDown.Visibility = Visibility.Collapsed;
-                    usunKlientaButtonDown.Visibility = Visibility.Collapsed;
-
-                    dodajFolderButtonDown.Visibility = Visibility.Collapsed;
-                    edytujFolderButtonDown.Visibility = Visibility.Collapsed;
-                    usunFolderButtonDown.Visibility = Visibility.Collapsed;
-
-                    dodajPolaczenieButtonDown.Visibility = Visibility.Collapsed;
-                    edytujPolaczenieButtonDown.Visibility = Visibility.Visible;
-                    usunPolaczenieButtonDown.Visibility = Visibility.Visible;
-
-                }
-                else
-                {
-                    maileView.ItemsSource = telefonyView.ItemsSource = haslaView.ItemsSource = null;
-                    checkListViews();
-
-                    dodajKlientaButtonDown.Visibility = Visibility.Visible;
-                    edytujKlientaButtonDown.Visibility = Visibility.Collapsed;
-                    usunKlientaButtonDown.Visibility = Visibility.Collapsed;
-
-                    dodajFolderButtonDown.Visibility = Visibility.Visible;
-                    edytujFolderButtonDown.Visibility = Visibility.Collapsed;
-                    usunFolderButtonDown.Visibility = Visibility.Collapsed;
-
-                    dodajPolaczenieButtonDown.Visibility = Visibility.Collapsed;
-                    edytujPolaczenieButtonDown.Visibility = Visibility.Collapsed;
-                    usunPolaczenieButtonDown.Visibility = Visibility.Collapsed;
-                }
-
-
-                string databasePath = Properties.Settings.Default.baseXmlPath;
-            }
-            catch (Exception ex)
-            {
-                MyMessageBox.Show("Treść błedu: \n" + ex.Message, "Nastąpił nieoczekiwany błąd", MyMessageBoxButtons.Ok);
-            }
-        }
-
-
-        private void rozwinPanele(Klient k)
-        {
-            try
-            {
-                maileView.ItemsSource = k.emailList;
-                telefonyView.ItemsSource = k.telefonList;
-                haslaView.ItemsSource = k.daneLogowaniaList;
-
-                checkListViews();
-            }
-            catch (Exception ex)
-            {
-                MyMessageBox.Show("Treść błedu: \n" + ex.Message, "Nastąpił nieoczekiwany błąd", MyMessageBoxButtons.Ok);
-            }
-        }
-
-        private void checkListViews()
-        {
-            try
-            {
-                if (maileView.Items.Count > 0) emailsExpander.IsExpanded = true;
-                else emailsExpander.IsExpanded = false;
-
-                if (telefonyView.Items.Count > 0) phonesExpander.IsExpanded = true;
-                else phonesExpander.IsExpanded = false;
-
-                if (haslaView.Items.Count > 0) credentialsExpander.IsExpanded = true;
-                else credentialsExpander.IsExpanded = false;
-            }
-            catch (Exception ex)
-            {
-                MyMessageBox.Show("Treść błedu: \n" + ex.Message, "Nastąpił nieoczekiwany błąd", MyMessageBoxButtons.Ok);
-            }
-        }
-
-        private void databasePathMenuItem_Click(object sender, RoutedEventArgs e)
-        {
-            try
-            {
-                DatabasePath databasePath = new DatabasePath();
-                databasePath.ShowDialog();
-                listOfClients.ItemsSource = Serializator.deserializuj(Properties.Settings.Default.baseXmlPath);
-                aktualizujTreeView(listOfClients);
-            }
-            catch (Exception ex)
-            {
-                MyMessageBox.Show("Treść błedu: \n" + ex.Message, "Nastąpił nieoczekiwany błąd", MyMessageBoxButtons.Ok);
-            }
-        }
-
-        private void minimalizeButton_Click(object sender, RoutedEventArgs e)
-        {
-            Application.Current.MainWindow.WindowState = System.Windows.WindowState.Minimized;
-        }
-
-
-        private void maileView_MouseDoubleClick(object sender, MouseButtonEventArgs e)
-        {
-
-            try
-            {
-                if (Keyboard.IsKeyDown(Key.LeftCtrl))
-                {
-                    Clipboard.SetText((maileView.SelectedItem as Email).adresEmail);
-                    MyMessageBox.Show("Adres: " + Clipboard.GetText() + " został skopiowany do schowka", "Skopiowano", MyMessageBoxButtons.Ok);
-                }
-                else
-                {
-                    Process.Start("mailto:" + (maileView.SelectedItem as Email).adresEmail);
+                    foreach (Element child in tempElement.Items)
+                    {
+                        tempElements.Enqueue(child);
+                    }
                 }
             }
-            catch (Exception ex)
-            {
-                MyMessageBox.Show(ex.Message, "Błąd", MyMessageBoxButtons.Ok);
-                return;
-            }
+
+
+            //}
+            //catch (Exception ex)
+            //{
+            //    MyMessageBox.Show("Treść błedu: \n" + ex.Message, "Nastąpił nieoczekiwany błąd", MyMessageBoxButtons.Ok);
+            //}
         }
 
-        private void telefonyView_MouseDoubleClick(object sender, MouseButtonEventArgs e)
-        {
-            try
-            {
-                Clipboard.SetText((telefonyView.SelectedItem as Telefon).numer);
-                MyMessageBox.Show("Numer: " + Clipboard.GetText() + " został skopiowany do schowka", "Skopiowano", MyMessageBoxButtons.Ok);
-            }
-            catch (Exception ex)
-            {
-                MyMessageBox.Show(ex.Message, "Błąd", MyMessageBoxButtons.Ok);
-                return;
-            }
-        }
-
-        private void haslaView_MouseDoubleClick(object sender, MouseButtonEventArgs e)
-        {
-            try
-            {
-                Clipboard.SetText((haslaView.SelectedItem as DaneLogowania).login + " " + (haslaView.SelectedItem as DaneLogowania).haslo);
-                MyMessageBox.Show(Clipboard.GetText() + " skopiowano do schowka", "Skopiowano", MyMessageBoxButtons.Ok);
-            }
-            catch (Exception ex)
-            {
-                MyMessageBox.Show(ex.Message, "Błąd", MyMessageBoxButtons.Ok);
-                return;
-            }
-            //https://szoi.nfz.poznan.pl/ap-mzwi/servlet/mzwiuser/komun
-            //Process.Start("https://szoi.nfz.poznan.pl/ap-mzwi/servlet/mzwiuser/komun");
-        }
-
-        private void maximalizeButton_Click_1(object sender, RoutedEventArgs e)
-        {
-            try
-            {
-                if (this.isMaximalize)// minimalizowanie okna
-                {
-                    this.Width = Properties.Settings.Default.previouslyWindowWidth;
-                    this.Height = Properties.Settings.Default.previouslyWindowHeight;
-                    this.Left = Properties.Settings.Default.MinimalizeWindowPosition.X;
-                    this.Top = Properties.Settings.Default.MinimalizeWindowPosition.Y;
-                    BitmapImage icon = new BitmapImage(new Uri("Images/maximalize.png", UriKind.Relative));
-                    this.resizeButtonImage.Source = icon;
-
-                    this.isMaximalize = !this.isMaximalize;
-                }
-                else
-                {
-                    Properties.Settings.Default.MinimalizeWindowPosition = new Point(App.Current.MainWindow.Left, App.Current.MainWindow.Top);
-                    Properties.Settings.Default.previouslyWindowHeight = this.Height;
-                    Properties.Settings.Default.previouslyWindowWidth = this.Width;
-                    this.Width = System.Windows.Forms.Screen.PrimaryScreen.WorkingArea.Width;
-                    this.Height = System.Windows.Forms.Screen.PrimaryScreen.WorkingArea.Height;
-                    this.Left = 0;
-                    this.Top = 0;
-                    BitmapImage icon = new BitmapImage(new Uri("Images/minimalize.png", UriKind.Relative));
-                    this.resizeButtonImage.Source = icon;
-
-
-                    this.isMaximalize = !this.isMaximalize;
-                }
-            }
-            catch (Exception ex)
-            {
-                MyMessageBox.Show("Treść błedu: \n" + ex.Message, "Nastąpił nieoczekiwany błąd", MyMessageBoxButtons.Ok);
-            }
-        }
-
-        private void TextBox_TextChanged(object sender, TextChangedEventArgs e)
+        private void searchTextBox_TextChanged(object sender, TextChangedEventArgs e)
         {
             try
             {
@@ -649,10 +358,6 @@ namespace SerwisMaster
                 MyMessageBox.Show("Treść błedu: \n" + ex.Message, "Nastąpił nieoczekiwany błąd", MyMessageBoxButtons.Ok);
             }
         }
-
-
-
-
 
         /// <summary>
         /// Wyszukuje elementów na liście z kontaktami i połączeniami
@@ -760,6 +465,299 @@ namespace SerwisMaster
             }
         }
 
+        private void dockPanel1_MouseLeftButtonDown(object sender, MouseButtonEventArgs e)
+        {
+            this.DragMove();
+        }
+
+
+        private void TreeViewItem_MouseDoubleClick(object sender, MouseButtonEventArgs e)
+        {
+            MyMessageBox.Show((sender as Element).Parent.ToString());
+        }
+
+        private void dropShadow(double blur)
+        {
+            tlo.Effect = new DropShadowEffect
+            {
+                Color = Colors.Black,
+                ShadowDepth = 0,
+                RenderingBias = System.Windows.Media.Effects.RenderingBias.Performance,
+                BlurRadius = blur,
+                Direction = 0,
+                Opacity = 1
+            };
+        }
+
+        private void Window_Deactivated(object sender, EventArgs e)
+        {
+            dropShadow(2);
+        }
+
+        private void Window_Activated(object sender, EventArgs e)
+        {
+            dropShadow(20);
+        }
+
+        private void listaKlientowTreeView_SelectedItemChanged(object sender, RoutedPropertyChangedEventArgs<object> e)
+        {
+            try
+            {
+                Element selectedItem = e.NewValue as Element;
+
+                if (selectedItem != null)
+                {
+                    opisRichTextBox.Document.Blocks.Clear();
+                    opisRichTextBox.Document.Blocks.Add(new Paragraph(new Run(selectedItem.Opis)) { Margin = new Thickness(0) });
+                }
+
+                if (selectedItem is Klient)
+                {
+                    rozwinPanele(selectedItem as Klient);
+
+                    dodajKlientaButtonDown.Visibility = Visibility.Collapsed;
+                    edytujKlientaButtonDown.Visibility = Visibility.Visible;
+                    usunKlientaButtonDown.Visibility = Visibility.Visible;
+
+                    dodajFolderButtonDown.Visibility = Visibility.Visible;
+                    edytujFolderButtonDown.Visibility = Visibility.Collapsed;
+                    usunFolderButtonDown.Visibility = Visibility.Collapsed;
+
+                    dodajPolaczenieButtonDown.Visibility = Visibility.Visible;
+                    edytujPolaczenieButtonDown.Visibility = Visibility.Collapsed;
+                    usunPolaczenieButtonDown.Visibility = Visibility.Collapsed;
+
+                }
+                else if (selectedItem is Element)
+                {
+
+                    if (selectedItem.Parent != null)
+                    {
+                        while (!(selectedItem.Parent is Klient))
+                        {
+                            if (selectedItem.Parent != null)
+                                selectedItem = selectedItem.Parent as Element;
+                            else
+                                goto parentIsNull;
+                        }
+                        rozwinPanele(selectedItem.Parent as Klient);
+
+                    }
+
+
+                parentIsNull:
+
+                    dodajKlientaButtonDown.Visibility = Visibility.Visible;
+                    edytujKlientaButtonDown.Visibility = Visibility.Collapsed;
+                    usunKlientaButtonDown.Visibility = Visibility.Collapsed;
+
+                    dodajFolderButtonDown.Visibility = Visibility.Visible;
+                    edytujFolderButtonDown.Visibility = Visibility.Visible;
+                    usunFolderButtonDown.Visibility = Visibility.Visible;
+
+                    dodajPolaczenieButtonDown.Visibility = Visibility.Collapsed;
+                    edytujPolaczenieButtonDown.Visibility = Visibility.Collapsed;
+                    usunPolaczenieButtonDown.Visibility = Visibility.Collapsed;
+
+                }
+                else if (selectedItem is Polaczenie)
+                {
+                    dodajKlientaButtonDown.IsEnabled = false;
+                    //rozwinPanele(selectedItem.Parent as Klient);
+
+                    dodajKlientaButtonDown.Visibility = Visibility.Collapsed;
+                    edytujKlientaButtonDown.Visibility = Visibility.Collapsed;
+                    usunKlientaButtonDown.Visibility = Visibility.Collapsed;
+
+                    dodajFolderButtonDown.Visibility = Visibility.Collapsed;
+                    edytujFolderButtonDown.Visibility = Visibility.Collapsed;
+                    usunFolderButtonDown.Visibility = Visibility.Collapsed;
+
+                    dodajPolaczenieButtonDown.Visibility = Visibility.Collapsed;
+                    edytujPolaczenieButtonDown.Visibility = Visibility.Visible;
+                    usunPolaczenieButtonDown.Visibility = Visibility.Visible;
+
+                }
+                else
+                {
+                    maileView.ItemsSource = telefonyView.ItemsSource = haslaView.ItemsSource = null;
+                    checkListViews();
+
+                    dodajKlientaButtonDown.Visibility = Visibility.Visible;
+                    edytujKlientaButtonDown.Visibility = Visibility.Collapsed;
+                    usunKlientaButtonDown.Visibility = Visibility.Collapsed;
+
+                    dodajFolderButtonDown.Visibility = Visibility.Visible;
+                    edytujFolderButtonDown.Visibility = Visibility.Collapsed;
+                    usunFolderButtonDown.Visibility = Visibility.Collapsed;
+
+                    dodajPolaczenieButtonDown.Visibility = Visibility.Collapsed;
+                    edytujPolaczenieButtonDown.Visibility = Visibility.Collapsed;
+                    usunPolaczenieButtonDown.Visibility = Visibility.Collapsed;
+                }
+
+
+                string databasePath = Properties.Settings.Default.baseXmlPath;
+            }
+            catch (Exception ex)
+            {
+                MyMessageBox.Show("Treść błedu: \n" + ex.Message, "Nastąpił nieoczekiwany błąd", MyMessageBoxButtons.Ok);
+            }
+        }
+
+
+        private void rozwinPanele(Klient k)
+        {
+            try
+            {
+                maileView.ItemsSource = k.emailList;
+                telefonyView.ItemsSource = k.telefonList;
+                haslaView.ItemsSource = k.daneLogowaniaList;
+
+                checkListViews();
+            }
+            catch (Exception ex)
+            {
+                MyMessageBox.Show("Treść błedu: \n" + ex.Message, "Nastąpił nieoczekiwany błąd", MyMessageBoxButtons.Ok);
+            }
+        }
+
+        private void checkListViews()
+        {
+            try
+            {
+                if (maileView.Items.Count > 0) emailsExpander.IsExpanded = true;
+                else emailsExpander.IsExpanded = false;
+
+                if (telefonyView.Items.Count > 0) phonesExpander.IsExpanded = true;
+                else phonesExpander.IsExpanded = false;
+
+                if (haslaView.Items.Count > 0) credentialsExpander.IsExpanded = true;
+                else credentialsExpander.IsExpanded = false;
+            }
+            catch (Exception ex)
+            {
+                MyMessageBox.Show("Treść błedu: \n" + ex.Message, "Nastąpił nieoczekiwany błąd", MyMessageBoxButtons.Ok);
+            }
+        }
+
+        private void databasePathMenuItem_Click(object sender, RoutedEventArgs e)
+        {
+            try
+            {
+                DatabasePath databasePath = new DatabasePath();
+                databasePath.ShowDialog();
+                //  listOfClients.ItemsSource = Serializator.deserializuj(Properties.Settings.Default.baseXmlPath);
+                aktualizujTreeView(listOfClients);
+            }
+            catch (Exception ex)
+            {
+                MyMessageBox.Show("Treść błedu: \n" + ex.Message, "Nastąpił nieoczekiwany błąd", MyMessageBoxButtons.Ok);
+            }
+        }
+
+        private void minimalizeButton_Click(object sender, RoutedEventArgs e)
+        {
+            Application.Current.MainWindow.WindowState = System.Windows.WindowState.Minimized;
+        }
+
+
+        private void maileView_MouseDoubleClick(object sender, MouseButtonEventArgs e)
+        {
+
+            try
+            {
+                if (Keyboard.IsKeyDown(Key.LeftCtrl))
+                {
+                    Clipboard.SetText((maileView.SelectedItem as EmailModel).AdresEmail);
+                    MyMessageBox.Show("Adres: " + Clipboard.GetText() + " został skopiowany do schowka", "Skopiowano", MyMessageBoxButtons.Ok);
+                }
+                else
+                {
+                    Process.Start("mailto:" + (maileView.SelectedItem as EmailModel).AdresEmail);
+                }
+            }
+            catch (Exception ex)
+            {
+                MyMessageBox.Show(ex.Message, "Błąd", MyMessageBoxButtons.Ok);
+                return;
+            }
+        }
+
+        private void telefonyView_MouseDoubleClick(object sender, MouseButtonEventArgs e)
+        {
+            try
+            {
+                Clipboard.SetText((telefonyView.SelectedItem as TelefonModel).NumerTelefonu);
+                MyMessageBox.Show("Numer: " + Clipboard.GetText() + " został skopiowany do schowka", "Skopiowano", MyMessageBoxButtons.Ok);
+            }
+            catch (Exception ex)
+            {
+                MyMessageBox.Show(ex.Message, "Błąd", MyMessageBoxButtons.Ok);
+                return;
+            }
+        }
+
+        private void haslaView_MouseDoubleClick(object sender, MouseButtonEventArgs e)
+        {
+            try
+            {
+                Clipboard.SetText((haslaView.SelectedItem as DaneLogowaniaModel).Login + " " + (haslaView.SelectedItem as DaneLogowaniaModel).Haslo);
+                MyMessageBox.Show(Clipboard.GetText() + " skopiowano do schowka", "Skopiowano", MyMessageBoxButtons.Ok);
+            }
+            catch (Exception ex)
+            {
+                MyMessageBox.Show(ex.Message, "Błąd", MyMessageBoxButtons.Ok);
+                return;
+            }
+            //https://szoi.nfz.poznan.pl/ap-mzwi/servlet/mzwiuser/komun
+            //Process.Start("https://szoi.nfz.poznan.pl/ap-mzwi/servlet/mzwiuser/komun");
+        }
+
+        private void maximalizeButton_Click_1(object sender, RoutedEventArgs e)
+        {
+            try
+            {
+                if (this.isMaximalize)// minimalizowanie okna
+                {
+                    this.Width = Properties.Settings.Default.previouslyWindowWidth;
+                    this.Height = Properties.Settings.Default.previouslyWindowHeight;
+                    this.Left = Properties.Settings.Default.MinimalizeWindowPosition.X;
+                    this.Top = Properties.Settings.Default.MinimalizeWindowPosition.Y;
+                    BitmapImage icon = new BitmapImage(new Uri("Images/maximalize.png", UriKind.Relative));
+                    this.resizeButtonImage.Source = icon;
+
+                    this.isMaximalize = !this.isMaximalize;
+                }
+                else
+                {
+                    Properties.Settings.Default.MinimalizeWindowPosition = new Point(App.Current.MainWindow.Left, App.Current.MainWindow.Top);
+                    Properties.Settings.Default.previouslyWindowHeight = this.Height;
+                    Properties.Settings.Default.previouslyWindowWidth = this.Width;
+                    this.Width = System.Windows.Forms.Screen.PrimaryScreen.WorkingArea.Width;
+                    this.Height = System.Windows.Forms.Screen.PrimaryScreen.WorkingArea.Height;
+                    this.Left = 0;
+                    this.Top = 0;
+                    BitmapImage icon = new BitmapImage(new Uri("Images/minimalize.png", UriKind.Relative));
+                    this.resizeButtonImage.Source = icon;
+
+
+                    this.isMaximalize = !this.isMaximalize;
+                }
+            }
+            catch (Exception ex)
+            {
+                MyMessageBox.Show("Treść błedu: \n" + ex.Message, "Nastąpił nieoczekiwany błąd", MyMessageBoxButtons.Ok);
+            }
+        }
+
+
+
+
+
+
+
+
         private List<Folder> getAllItemsOfTreeView()
         {
 
@@ -833,6 +831,8 @@ namespace SerwisMaster
                     Klient.DodajKlienta(this.listaKlientowTreeView.SelectedItem, e);
                 else if (listaKlientowTreeView.SelectedItem == null)
                     Klient.DodajKlienta(this.listaKlientowTreeView, e);
+
+                aktualizujTreeView(listOfClients);
             }
             catch (Exception ex)
             {
@@ -1099,7 +1099,7 @@ namespace SerwisMaster
                             if ((finalDropEffect == DragDropEffects.Move) && (_target != null))
                             {
                                 // A Move drop was accepted
-                                if (!draggedItem.Id.ToString().Equals(_target.Id.ToString()))
+                                if (!draggedItem.Klucz.ToString().Equals(_target.Klucz.ToString()))
                                 {
                                     CopyItem(draggedItem, _target);
                                     _target = null;
@@ -1177,7 +1177,7 @@ namespace SerwisMaster
             try
             {
                 bool _isEqual = false;
-                if (!_sourceItem.Id.ToString().Equals(_targetItem.Id.ToString()))
+                if (!_sourceItem.Klucz.ToString().Equals(_targetItem.Klucz.ToString()))
                 {
                     _isEqual = true;
                 }
@@ -1206,9 +1206,9 @@ namespace SerwisMaster
                     {
                         foreach (Element item in allElements)
                         {
-                            if (item.Id == _sourceItem.Id)
+                            if (item.Klucz == _sourceItem.Klucz)
                             {
-                                listaIdWykluczonychElementow.Add(item.Id);
+                                listaIdWykluczonychElementow.Add(item.Klucz);
                                 Queue<Element> kolejkaPrzegladaniaDzieciWezlaItem = new Queue<Element>();
                                 kolejkaPrzegladaniaDzieciWezlaItem.Enqueue(item);
 
@@ -1223,7 +1223,7 @@ namespace SerwisMaster
                                             foreach (Element child in temp.Items)
                                             {
                                                 kolejkaPrzegladaniaDzieciWezlaItem.Enqueue(child);
-                                                listaIdWykluczonychElementow.Add(child.Id);
+                                                listaIdWykluczonychElementow.Add(child.Klucz);
                                             }
                                         }
                                     }
@@ -1233,7 +1233,7 @@ namespace SerwisMaster
                         }
                     }
 
-                    if (listaIdWykluczonychElementow != null && listaIdWykluczonychElementow.Count > 0 && listaIdWykluczonychElementow.Contains(_targetItem.Id))
+                    if (listaIdWykluczonychElementow != null && listaIdWykluczonychElementow.Count > 0 && listaIdWykluczonychElementow.Contains(_targetItem.Klucz))
                     {
                         throw new ProbaDodaniaRodzicaElementuDoDzieckaException("Próba dodania węzłu rodzica do elementu podległego (dziecka)");
                     }
@@ -1274,7 +1274,7 @@ namespace SerwisMaster
 
                 foreach (XmlNode item in nodeList)
                 {
-                    if (item.Attributes["Id"].InnerText == _sourceItem.Id)
+                    if (item.Attributes["Id"].InnerText == _sourceItem.Klucz)
                     {
                         sourceItem = item;
                         break;
@@ -1287,7 +1287,7 @@ namespace SerwisMaster
                     //    break;
                 }
 
-                sourceItem.Attributes["Group"].InnerText = _targetItem.Id;
+                sourceItem.Attributes["Group"].InnerText = _targetItem.Klucz;
                 xml.Save(Properties.Settings.Default.baseXmlPath);
                 MainWindow.aktualizujTreeView(MainWindow.listOfClients);
             }
@@ -1376,7 +1376,7 @@ namespace SerwisMaster
 
                     foreach (XmlNode node in nodeList)
                     {
-                        if (node.Attributes["Id"].InnerText == ((listaKlientowTreeView.SelectedItem) as Element).Id)
+                        if (node.Attributes["Id"].InnerText == ((listaKlientowTreeView.SelectedItem) as Element).Klucz)
                         {
                             node.Attributes["Description"].InnerText = new TextRange(opisRichTextBox.Document.ContentStart, opisRichTextBox.Document.ContentEnd).Text;
                             xml.Save(Properties.Settings.Default.baseXmlPath);
@@ -1396,6 +1396,34 @@ namespace SerwisMaster
 
         private void opisRichTextBox_LostKeyboardFocus(object sender, KeyboardFocusChangedEventArgs e)
         {
+        }
+
+        private void refreshButton_Click(object sender, RoutedEventArgs e)
+        {
+            aktualizujTreeView(listOfClients);
+        }
+
+        private void Button_Click_1(object sender, RoutedEventArgs e)
+        {
+            listOfClients.Items.Refresh();
+        }
+
+        private void showHiddenButton_Click(object sender, RoutedEventArgs e)
+        {
+            string obecnaWartosc = bazaDanych.PobierzWartoscOpcji(NazwaOpcji.PokazUkryteElementy);
+            
+            if (obecnaWartosc == "T")
+            {
+                bazaDanych.UstawOpcje(NazwaOpcji.PokazUkryteElementy, "N");
+                showHiddenButton.Content = "-";
+            }
+            else
+            {
+                bazaDanych.UstawOpcje(NazwaOpcji.PokazUkryteElementy, "T");
+                showHiddenButton.Content = "O";
+            }
+
+            aktualizujTreeView(listOfClients);
         }
 
         private void zamknijAplikacje()

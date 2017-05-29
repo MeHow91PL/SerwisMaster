@@ -1,19 +1,20 @@
-﻿using SerwisMaster.Models;
+﻿using SerwisMaster.BL;
+using SerwisMaster.Models;
 using System;
 using System.Collections.Generic;
-using System.Threading;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Data;
 using System.Windows.Input;
 using System.Windows.Threading;
-using System.Xml;
 
 namespace SerwisMaster
 {
     public class Folder : Element
     {
         public string groupRDM { get; set; }
+        static IBazaDanych db = new BazaLocalDb();
+
 
         public Folder() : base() { }
 
@@ -76,7 +77,13 @@ namespace SerwisMaster
         public void DodajFolder(object sender, RoutedEventArgs e)
         {
             var parent = getSenderParent(sender) as UIElement;
-            Folder folder = new Folder("", "", "", "", parent);
+            string kluczRodzica = "";
+            if (parent is Element)
+            {
+                kluczRodzica = (parent as Element).Klucz;
+            }
+            Folder folder = new Folder("", kluczRodzica, "", "");
+            db.DodajElement(folder);
 
             if (parent is Folder)
             {
@@ -114,6 +121,21 @@ namespace SerwisMaster
                 f.Focus();         // Set Logical Focus
                 Keyboard.Focus(tb); // Set Keyboard Focus
             }));
+        }
+
+
+        public static implicit operator Folder(ElementModel element)
+        {
+            Folder folder = new Folder()
+            {
+                Klucz = element.Klucz,
+                KluczRodzica = element.KluczRodzica,
+                Nazwa = element.Nazwa,
+                Opis = element.Opis,
+                Rodzaj = element.Rodzaj,
+                Status = element.Status
+            };
+            return folder;
         }
     }
 }

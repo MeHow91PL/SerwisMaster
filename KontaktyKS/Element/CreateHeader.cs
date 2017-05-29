@@ -6,7 +6,7 @@ using System.Windows.Controls;
 using System.Windows.Media.Imaging;
 using System.Windows;
 using System.Xml;
-using SerwisMaster.Klasy_połączenia;
+using SerwisMaster.Polaczenia;
 
 namespace SerwisMaster
 {
@@ -24,9 +24,9 @@ namespace SerwisMaster
                     obrazek = new Uri("Images/tvIcon.png", UriKind.Relative);
                     nazwa = ( obj as TeamViewer ).Nazwa;
                     break;
-                case "SerwisMaster.Klasy_połączenia.Rdp":
+                case "SerwisMaster.Polaczenia.Rdp":
                     obrazek = new Uri("Images/zdalnyIcon.png", UriKind.Relative);
-                    nazwa = ( obj as SerwisMaster.Klasy_połączenia.Rdp ).Nazwa;
+                    nazwa = ( obj as SerwisMaster.Polaczenia.Rdp ).Nazwa;
                     break;
                 case "SerwisMaster.Klient":
                     obrazek = new Uri("Images/userIcon.png", UriKind.Relative);

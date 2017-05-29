@@ -1,28 +1,23 @@
-﻿using System;
+﻿using SerwisMaster.BL;
+using SerwisMaster.Models;
+using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 using System.Windows;
 using System.Windows.Controls;
-using System.Windows.Data;
-using SerwisMaster.Klasy_połączenia;
-using System.IO;
-using System.Windows.Media;
-using System.Drawing;
-using System.Windows.Media.Imaging;
-using System.Xml;
-using SerwisMaster.Models;
 
 namespace SerwisMaster
 {
     public class Klient : Folder, IDisposable
     {
-        public List<Email> emailList;
-        public List<Telefon> telefonList;
-        public List<DaneLogowania> daneLogowaniaList;
 
-        public Klient(string nazwa, string kluczRodzica, string opis, List<Email> emailList, 
-            List<Telefon> telefonList, List<DaneLogowania> daneLogowaniaList, string klucz="", object parent=null)
+        static IBazaDanych db = new BazaLocalDb();
+
+        public List<EmailModel> emailList;
+        public List<TelefonModel> telefonList;
+        public List<DaneLogowaniaModel> daneLogowaniaList;
+
+        public Klient(string nazwa, string kluczRodzica, string opis, List<EmailModel> emailList, 
+            List<TelefonModel> telefonList, List<DaneLogowaniaModel> daneLogowaniaList, string klucz="", object parent=null)
             : base(nazwa, kluczRodzica, opis,klucz, parent)
         {
             this.Rodzaj = RodzajElementu.Klient;
@@ -32,37 +27,25 @@ namespace SerwisMaster
             this.daneLogowaniaList = daneLogowaniaList;
             //utworzContextMenu();
         }
-
-        public void Dispose()
-        {
-            Dispose(true);
-            GC.SuppressFinalize(this);
-        }
-
-        protected virtual void Dispose(bool disposing)
-        {
-            if (disposing)
-            {
-                Nazwa = string.Empty;
-                emailList = null;
-                telefonList = null;
-                daneLogowaniaList = null;
-            }
-        }
-
-
-
+       
         public static void DodajKlienta(object sender, RoutedEventArgs e)
         {
             var parent = getSenderParent(sender);
+            string kluczRodzica = "";
 
-            DodajKlienta newClient = new DodajKlienta(parent);
+            if (parent is Element)
+            {
+                kluczRodzica = (parent as Element).Klucz;
+            }
+
+            Klient klient = new Klient("", kluczRodzica, "", new List<EmailModel>(), new List<TelefonModel>(), new List<DaneLogowaniaModel>());
+
+            DaneKlienta newClient = new DaneKlienta(klient, sender);
             newClient.ShowDialog();
         }
 
         private void utworzContextMenu()
         {
-
             ContextMenu contextMenu = new ContextMenu();
             MenuItem[] mi = new MenuItem[5];
 
@@ -90,7 +73,7 @@ namespace SerwisMaster
             this.IsExpanded = true;
 
             Klient klient = getSenderParent(sender) as Klient;
-            OknoPolaczenia dodajPolaczenie = new OknoPolaczenia(klient.Id);
+            OknoPolaczenia dodajPolaczenie = new OknoPolaczenia(klient.Klucz);
             dodajPolaczenie.ShowDialog();
 
             MainWindow.aktualizujTreeView(MainWindow.listOfClients);
@@ -100,31 +83,40 @@ namespace SerwisMaster
         {
             Klient klient = getSenderParent(sender) as Klient;
 
-            EdytujKlienta edit = new EdytujKlienta(klient);
+            DaneKlienta edit = new DaneKlienta(klient);
             edit.ShowDialog();
         }
 
+        public void Dispose()
+        {
+            Dispose(true);
+            GC.SuppressFinalize(this);
+        }
 
-    }
+        protected virtual void Dispose(bool disposing)
+        {
+            if (disposing)
+            {
+                Nazwa = string.Empty;
+                emailList = null;
+                telefonList = null;
+                daneLogowaniaList = null;
+            }
+        }
 
+        public static implicit operator Klient(KlientModel klientModel)
+        {
+            Klient klient = new Klient(
+                klientModel.Element.Nazwa,
+                klientModel.Element.KluczRodzica,
+                klientModel.Element.Opis,
+                klientModel.AdresyEmail,
+                klientModel.Telefony,
+                klientModel.DaneLogowania,
+                klientModel.Element.Klucz
+            );
+            return klient;
+        }
 
-
-    public class Email : MenuItem
-    {
-        public string adresEmail { get; set; }
-    }
-
-
-    public class Telefon
-    {
-        public string nazwa { get; set; }
-        public string numer { get; set; }
-    }
-
-    public class DaneLogowania
-    {
-        public string login { get; set; }
-        public string haslo { get; set; }
-        public string system { get; set; }
     }
 }

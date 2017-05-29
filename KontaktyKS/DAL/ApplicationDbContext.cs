@@ -16,8 +16,11 @@ namespace SerwisMaster.DAL
         {
           
         }
-
-        public DbSet<Klienci> Klienci { get; set; }
         public DbSet<ElementModel> Elementy { get; set; }
+        public DbSet<KlientModel> Klienci { get; set; }
+        public DbSet<TeamViewerModel> PolaczeniaTeamViewer { get; set; }
+        public DbSet<RdpModel> PolaczeniaRdp { get; set; }
+        public DbSet<WebBrowserModel> PolaczeniaWebBrowser { get; set; }
+        public DbSet<Opcje> Opcje { get; set; }
     }
 }

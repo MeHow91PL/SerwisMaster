@@ -6,25 +6,26 @@ using System.Xml;
 using System.Windows.Controls;
 using System.Windows.Media.Imaging;
 using Microsoft.Win32;
+using SerwisMaster.Models;
 
 namespace SerwisMaster
 {
-    class TeamViewer : Polaczenie
+    public class TeamViewer : Polaczenie
     {
         public string teamViewerId = "";
 
-        public TeamViewer(string nazwa, string group, string opis, string haslo, string typ, string teamViewerId, string id="", object parent=null)
-            : base(nazwa, group, opis, haslo, typ, id, parent)
+        public TeamViewer(string nazwa, string kluczRodzica, string opis, string haslo, string teamViewerId, string klucz = "", object parent = null)
+            : base(nazwa, kluczRodzica, opis, haslo, klucz, parent)
         {
             this.Rodzaj = Models.RodzajElementu.TeamViewer;
             this.teamViewerId = teamViewerId;
             Header = CreateHeader.createItemHeader(this);
-            this.ToolTip = new ToolTip() { Content = this.Nazwa + "\nID: "+ this.teamViewerId + "\nHasło: " + haslo};
+            this.ToolTip = new ToolTip() { Content = this.Nazwa + "\nID: " + this.teamViewerId + "\nHasło: " + haslo };
         }
 
         public override void uruchomPolaczenie(object sender, MouseButtonEventArgs e)
         {
-            
+
             RegistryKey reg = Registry.LocalMachine.OpenSubKey(@"SOFTWARE\Classes\TeamViewerConfiguration\DefaultIcon");
 
             string Wzor = (string)reg.GetValue("");
@@ -51,10 +52,19 @@ namespace SerwisMaster
                     break;
                 }
             }
-            
-            
         }
 
-
+        public static implicit operator TeamViewer(TeamViewerModel teamViewerModel)
+        {
+            TeamViewer teamViewer = new TeamViewer(
+                teamViewerModel.Element.Nazwa,
+                teamViewerModel.Element.KluczRodzica,
+                teamViewerModel.Element.Opis,
+                teamViewerModel.Haslo,
+                teamViewerModel.TeamViewerId,
+                teamViewerModel.Element.Klucz
+            );
+            return teamViewer;
+        }
     }
 }

@@ -6,7 +6,7 @@ using System.Windows.Data;
 using System.Threading;
 using System.Xml;
 using System;
-using SerwisMaster.Klasy_połączenia;
+using SerwisMaster.Polaczenia;
 
 namespace SerwisMaster
 {
@@ -15,12 +15,11 @@ namespace SerwisMaster
         public string haslo;
         public string typ;
 
-        public Polaczenie(string nazwa, string group, string opis, string haslo, string typ,string id = "", object parent = null) : base(nazwa,group,opis,id,parent)
+        public Polaczenie(string nazwa, string kluczRodzica, string opis, string haslo,string klucz = "", object parent = null) : base(nazwa,kluczRodzica,opis,klucz,parent)
         {
             this.Tag = "3" + nazwa;
             this.Header = this.Nazwa;
             this.haslo = haslo;
-            this.typ = typ;
             this.ContextMenu = stworzContextMenu();
             this.MouseDoubleClick += uruchomPolaczenie;
             this.Selected += Polaczenie_Selected;
@@ -67,7 +66,7 @@ namespace SerwisMaster
         public void edytujPolaczenieClick(object sender, RoutedEventArgs e)
         {
             Polaczenie polaczenie = getSenderParent(sender) as Polaczenie;
-            OknoPolaczenia oknoPolaczenia = new OknoPolaczenia((polaczenie.Parent as Folder).Id, polaczenie.Id );
+            OknoPolaczenia oknoPolaczenia = new OknoPolaczenia((polaczenie.Parent as Folder).Klucz, polaczenie.Klucz);
             oknoPolaczenia.nazwaTextBox.Text = polaczenie.Nazwa;
             oknoPolaczenia.hasloTextBox.Text = polaczenie.haslo;
             oknoPolaczenia.rodzajComboBox.IsEnabled = false;
@@ -98,7 +97,7 @@ namespace SerwisMaster
 
                 klient.Items.Remove(polaczenie);
                 Thread nowyWatek = new Thread(usunPolaczenie);
-                nowyWatek.Start(polaczenie.Id);
+                nowyWatek.Start(polaczenie.Klucz);
 
                 CollectionViewSource.GetDefaultView(klient.Items).Refresh();
             }
